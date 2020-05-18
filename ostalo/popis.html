@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="hr">
+    <head>
+        <title>Popis</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="Ilija Vuk">
+        <meta name="keywords" content="Popis, WebDiP">
+        <meta name="description" content="Stranica za popis za prvu zadaću iz laboratorijskih vježbi za kolegij Web Dizajn i Programiranje. Ova stranica sadrži sve elemente koji su definirani na stranici Obrazac">
+        <meta name='date' content='March. 25, 2020'>
+        <link rel = "stylesheet" type = "text/css" href = "https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+        <link href="../css/ivuk.css" rel="stylesheet" type="text/css">  
+        <link href="../css/ivuk_prilagodbe.css" rel="stylesheet" type="text/css">
+        <link href="../css/ivuk_ispis.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.css"/>
+        <meta name="referrer" content="origin-when-cross-origin">
+    </head>
+    <body>
+        <header>
+            <a href="../index.html"><img src = "../multimedija/VW_logo.png" alt="foi logo" width = "60" height="60" style="position: absolute; top: 5px; left: 5px;"></a>
+            <h1 style="position: absolute; left: 50%; margin-left: -37px;">Popis</h1>
+            <form action="http://barka.foi.hr/WebDiP/2019/materijali/zadace/ispis_forme.php" method="GET" style="display:inline;">
+                <div class="searchForm">
+                    <input type = "text" name = "search" required="required" id="search" class="searchField" style="display:inline;">
+                    <input type = "submit" value = "Submit" id = "submit" style="display:inline;">
+                </div>
+            </form>
+            <span style="position: absolute; right: 2%; top: 25px; font-size: 20px;"> Log out </span>
+        </header>
+        <div id ="navWrapper">
+            <span id="navButtonOff">&nbsp;≡&nbsp;</span>
+            <nav>
+                <ul style="list-style-type:none;">
+                    <li><a href = '../index.html'>Početna stranica</a></li>
+                    <li><a href = '../obrasci/prijava.html'>Prijava</a></li>
+                    <li><a href = '../obrasci/registracija.html'>Registracija</a></li>
+                    <li><a href = '../obrasci/obrazac.html'>Obrazac</a></li>
+                    <li><a href = 'multimedija.html'>Multimedija</a></li>
+                    <li><a href = 'popis.html'>Popis</a></li>
+                    <li><a href = '../era.html'>ERA</a></li>
+                    <li><a href = '../navigacija.html'>Dijagram</a></li>
+                </ul>
+            </nav>
+        </div>
+        
+        <nav class="index">
+            <ul style="list-style-type:none;">
+                <li><a href = '../index.html'>Početna stranica</a></li>
+                    <li><a href = '../obrasci/prijava.html'>Prijava</a></li>
+                    <li><a href = '../obrasci/registracija.html'>Registracija</a></li>
+                    <li><a href = '../obrasci/obrazac.html'>Obrazac</a></li>
+                    <li><a href = 'multimedija.html'>Multimedija</a></li>
+                    <li><a href = 'popis.html'>Popis</a></li>
+                    <li><a href = '../era.html'>ERA</a></li>
+                    <li><a href = '../navigacija.html'>Dijagram</a></li>
+            </ul>
+        </nav>
+        <span id="toTopBtn">▲</span>   
+        
+        <main id="multimedijaSection" style="display: block;  min-height: 400px;">
+            <table id="tablica">
+                <thead>
+                    <tr>
+                        <th class="naslovStupca" style="padding: 0px 5px 0px;">Ime</th>
+                        <th class="naslovStupca">Prezime</th>
+                        <th class="naslovStupca">Email</th>
+                        <th class="naslovStupca">Slika</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+
+                </tbody>
+            </table>
+        </main>
+        <footer>
+            <a href="http://validator.w3.org/check?uri=http://barka.foi.hr/WebDiP/2019/zadaca_03/ivuk/ostalo/popis.html" rel="nofollow"><img src="../multimedija/HTML5.png" alt = "HTML Validator" height="50" width="50"></a>
+            <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://barka.foi.hr/WebDiP/2019/zadaca_03/ivuk/css/ivuk.css" rel="nofollow"><img src="../multimedija/CSS3.png" alt="CSS Validator" height ="55" width="55"></a>
+            <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://barka.foi.hr/WebDiP/2019/zadaca_03/ivuk/css/ivuk_prilagodbe.css" rel="nofollow"><img src="../multimedija/CSS3.png" alt="CSS Validator" height ="55" width="55"></a>
+            <a href="http://jigsaw.w3.org/css-validator/validator?uri=http://barka.foi.hr/WebDiP/2019/zadaca_03/ivuk/css/ivuk_ispis.css" rel="nofollow"><img src="../multimedija/CSS3.png" alt="CSS Validator" height ="55" width="55"></a>
+            <address style="font-weight: bold;">Kontakt: <a href="mailto:ivuk@foi.hr?subject=Kontakt_sa_početne_stranice" target="_blank">Ilija Vuk</a></address>
+            <p><small>&copy; 2020 I. Vuk</small></p>
+        </footer>
+        
+        <script src="../javascript/ivuk.js"></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="//code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script src="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js"></script>
+        
+        <script src="../javascript/ivuk_jquery.js"></script>
+    </body>
+</html>

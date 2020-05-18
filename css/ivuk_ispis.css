@@ -1,0 +1,5 @@
+@media print{
+    img, video, audio, iframe, header, footer, .index{
+        display: none;
+    }
+}
