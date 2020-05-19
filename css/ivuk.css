@@ -1,0 +1,337 @@
+*{
+    margin: 0;
+    font-family: SegoeUI;
+    box-sizing: border-box;
+}
+
+main{
+    position: relative;
+    perspective: 1000px;
+    margin-top: calc( 85px + 50px );
+}
+
+.footerWrapper{
+    display: grid;
+    grid-template-rows: auto 100px;
+    column-gap: 50px;
+    min-height: 100vh;
+}
+
+#wrapper{
+    /*min-width: 100%;*/
+    width: 90%;
+    margin: auto;
+    display: block;
+    box-sizing: border-box;
+}
+
+.rotateIn{
+    transition: .5s;
+    margin-left: 0;
+    
+    transform: translateX(0);
+    -webkit-transform: translateX(0);
+    -moz-transform: translateX(0);
+    /*
+    transform: rotateY(0);
+    -webkit-transform: rotateY(0);
+    -moz-transform: rotateY(0);
+    */
+}
+
+.rotateOut{
+    transition: .5s; 
+    
+    transform: translateX(70%);
+    -webkit-transform: translateX(70%);
+    -moz-transform: translateX(70%);
+    /*
+    transform: rotateY(45deg);
+    -webkit-transform: rotateY(45deg);
+    -moz-transform: rotateY(45deg);
+    */
+}
+
+.header{
+    display: grid;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 85px;
+    z-index: 1;
+    border: solid 1px #707070;
+    background-color: #232323;
+    text-align: right;
+    grid-template-rows: 39px 40px;
+    grid-template-columns: 18px 45px auto;
+}
+
+.headerText{
+    display: inline-block;
+    font-size: 30px;
+    color: #f1cd7b;
+    margin-right: 7px;
+    grid-column: 3 / span 1;
+}
+
+.headerFigure{
+    display: block;
+    float: right;
+    margin: auto;
+    margin-right: 0;
+    width: 83px;
+    object-fit: contain;
+    grid-column: 3 / span 1;
+}
+
+.headerImage{
+    width: 100%;
+}
+
+.button{
+    width: 100%;
+    height: 45px;
+    border: solid 1px #ffffff;
+    background-color: #4ca758;
+    display: none;
+    align-self: center;
+    color: #ffffff;
+    font-size: 24px;
+}
+
+.button:hover{
+    background-color: #f1cd7b;
+}
+
+.navButton{
+    user-select: none;
+    font-size: 30px;
+    font-weight: bolder;
+    height: 45px;
+    width: 45px;  
+    border: solid 1px #707070;
+    background-color: #ffffff;
+    grid-column: 2 / span 1;
+    grid-row: 1 / span 2;
+    align-self: center;
+    text-align: center;
+    line-height: 45px;;
+}
+
+.navButton.On{
+    border: solid 1px #ffffff;
+    background-color: #707070;
+}
+
+.navBar{
+    display: grid;
+    position: fixed;
+    z-index: 2;
+    top: 85px;
+    border: solid 1px #707070;
+    background-color: #AFAFAF;
+    align-items: center;
+    font-weight: bold;
+    height: 100%;
+    width: 60%;
+    grid-template-rows: repeat(8, 70px) auto;
+    justify-content: center;
+
+    transform: translateX(-100%);
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+}
+
+.navLink{
+    width: 80%;
+    height: 35px;
+    line-height: 35px;
+    text-decoration: none;
+    font-size: 24px;
+    color: #363636;
+    text-align: center;
+    border-bottom: 2px solid #707070;
+}
+
+.slide-in {
+    animation: slide-in 0.5s forwards;
+    -webkit-animation: slide-in 0.5s forwards;
+}
+
+.slide-out {
+    animation: slide-out 0.5s forwards;
+    -webkit-animation: slide-out 0.5s forwards;
+}
+
+.footer{
+    position: relative;
+    z-index: 2;
+    align-self: end;
+    height: 75px;
+    line-height: 75px;
+    border: solid 1px #707070;
+    background-color: #232323;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.footerText{
+    display: inline-block;
+    font-size: 22px;
+    color: #f1cd7b;
+}
+
+/* forms */
+.heading{
+    width: 100%;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+label{
+    font-size: 20px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.textbox{
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.text{
+    box-sizing: border-box;
+    width: 100%;
+    height:0.8em;
+    padding: 20px 20px;
+    font-size: 20px;
+    border: 1px solid #f1cd7b;
+}
+
+.buttonWrapper{
+    text-align: center;
+}
+
+.submit{
+    width: 100%;
+    height: 45px;
+    border: solid 1px #000000;
+    background-color: #f1cd7b;
+    align-self: center;
+    color: #000000;
+    font-size: 24px;
+    margin: auto;
+}
+
+.linkWithUnderline{
+    display: inline-block;
+    color: #707070;
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+.linkWithUnderline.redirect{
+    display:none;
+}
+
+@keyframes slide-in {
+    100% { transform: translateX(0%); }
+}
+
+@-webkit-keyframes slide-in {
+    100% { -webkit-transform: translateX(0%); }
+}
+    
+@keyframes slide-out {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-100%); }
+}
+
+@-webkit-keyframes slide-out {
+    0% { -webkit-transform: translateX(0%); }
+    100% { -webkit-transform: translateX(-100%); }
+}
+
+@media only screen and (min-width: 768px){
+    .submit{
+        width: 200px;
+    }
+    
+}
+
+@media only screen and (min-width: 1034px){
+    main{
+        margin-top: calc( 85px + 65px + 50px );
+    }
+    .header{
+        text-align: left;
+        grid-template-rows: 84px;
+        grid-template-columns: 148px 12px auto 192px 43px 155px 25px ;
+    }
+
+    .headerFigure{
+        width: 148px;
+        display: inline-block;
+        margin: auto auto auto 0;
+        grid-column: 1 / span 1;
+    }
+
+    .headerText{    
+        margin-top: 23px;
+        grid-column: 3 / span 1;
+    }
+
+    .button{
+        display: inline-block;
+    }
+
+    .navButton{
+        display: none;
+    }
+
+    .mobileOnly{
+        display: none;
+    }
+    .slide-out{
+        animation: slide-in 0s forwards;
+    }
+
+    .navBar{
+        transform: translateX(0%);
+        -moz-transform: translateX(0%);
+        -webkit-transform: translateX(0%);
+        width: 100%;
+        height: 65px;
+        grid-template-columns: repeat(6, 1fr);
+        grid-template-rows: auto;
+    }
+
+    .navLink{   
+        width: 100%;
+        border-right: 2px solid #707070;
+        border-bottom: none;
+    }
+    
+    .navLink:nth-of-type(6){
+        border-right: none;
+    }
+
+     #wrapper{
+        width: 60%;
+    }
+
+    .buttonWrapper{
+        float: right;
+    }
+    
+    @keyframes slide-out {
+        0% { transform: translateX(0%); }
+        100% { transform: translateX(0%); }
+    }
+    
+    @-webkit-keyframes slide-out {
+        0% { -webkit-transform: translateX(0%); }
+        100% { -webkit-transform: translateX(0%); }
+    }
+}   
+
