@@ -80,6 +80,7 @@
                                         <td>'.$red['naziv'].'</td>
                                         <td>'.$red['adresa'].'</td>
                                         <td>'.$red['postanskiBroj'].'</td>
+                                        <td style="display:none">'.$red['id_drzave'].'</td>
                                     </tr>
                                 ';
                             }

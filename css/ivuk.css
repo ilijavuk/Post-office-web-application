@@ -23,12 +23,13 @@ main{
     margin: auto;
     display: block;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .rotateIn{
     transition: .5s;
     margin-left: 0;
-    
+
     transform: translateX(0);
     -webkit-transform: translateX(0);
     -moz-transform: translateX(0);
@@ -230,15 +231,24 @@ label{
     font-size: 20px;
     margin-bottom: 25px;
 }
+
 .linkWithUnderline.redirect{
     display:none;
 }
 
 table{
+    font-size: 22px;
     width: 100%;
 }
+
 tbody>tr:nth-child(odd){
     background-color: #f1cd7b;
+}
+
+.select-css{
+    height: 40px;
+    outline: none;
+    font-size: 22px;
 }
 
 @keyframes slide-in {

@@ -42,6 +42,33 @@ $(()=>{
         }
     }
     if(window.location.href.includes("uredi")){
-        $vrijednost = $("#select").val;
+        let poljeSPodatcima = '';
+        $.ajax({
+            url: "api.php?fetch_postanskiUred=1",
+        }).done(function(data) {
+            poljeSPodatcima = data;
+        });
+
+        $vrijednost = $("#select").on('change', function(){
+            $("tbody").empty();
+            $htmlObject = $(poljeSPodatcima);
+            console.log($htmlObject);
+            $val = $vrijednost.val();
+            $array = $($htmlObject).children();
+            $count = 0;
+            $array.each(item => {
+                $item = $array[item];
+                if($($item).children()[3].innerHTML == $val){
+                    $("tbody").append($item);
+                    $count++;
+                }
+                else{
+                    console.log($($item).children()[3].innerHTML, $val)
+                }
+            });
+            if($count == 0){
+                $("tbody").append("<tr height='24'><td colspan=3>Podatci ne postoje</td></tr>")
+            }
+        });
     }
 })
