@@ -1,7 +1,16 @@
+<?php
+    require("baza.class.php"); 
+    $baza = new Baza;
+    $baza -> spojiDB();
+
+    $upit = "SELECT * FROM drzava;";
+    $rezultat = $baza -> SelectDB($upit);
+?>
+
 <!DOCTYPE html>
 <html lang="hr">
     <head>
-        <title>Prijava</title>
+        <title>Države</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="author" content="Ilija Vuk">
@@ -26,10 +35,10 @@
         </header>
 
         <nav class="navBar">
-            <a href="posiljke.php" class="navLink">Pošiljke</a>
+        <a href="posiljke.php" class="navLink">Pošiljke</a>
             <a href="racuni.php" class="navLink">Računi</a>
             <a href="uredi.php" class="navLink">Uredi</a>
-            <a href="drzave.php" class="navLink">Države</a>
+            <a href="drzave.php" class="navLink active">Države</a>
             <a href="o_autoru.html" class="navLink">O autoru</a>
             <a href="dokumentacija.html" class="navLink">Dokumentacija</a>
             <a href="register.html" class="navLink mobileOnly">Register</a>
@@ -39,27 +48,44 @@
         <div class="footerWrapper">
 		<main>
             <div id="wrapper" class="rotateIn">
-                <h1 class="heading">Prijavi se</h1>
-                <a class="linkWithUnderline redirect" href="login.html">Nemaš profil? Registriraj se</a>
-                <form action="http://barka.foi.hr/WebDiP/2019/materijali/zadace/ispis_forme.php" method="GET">
-                    <div class = "textbox" id="kor_imeTextBox">
-                        <label for="kor_ime">Korisničko ime</label>
-                        <input type = "text" name = "kor_ime" id="kor_ime" class="text"><br>
-                    </div>
-                    <div class = "textbox" style="display: none;" id="e_mailTextBox">
-                        <label for="e_mail">E-mail</label>
-                        <input type = "email" name = "e_mail" id="e_mail" class="text"><br>
-                    </div>
-                    <div class = "textbox">
-                        <label for="lozinka">Lozinka</label>
-                        <input type = "password" name = "lozinka" id="lozinka" class="text"><br>
-                    </div>
-                    <span class="linkWithUnderline" id="forgottenUsername" style="text-decoration: underline; display: block;">Zaboravili ste korisničko ime? Prijavite se pomoću e-maila</span>
-                    <a class="linkWithUnderline" href="passwordRecovery.html">Zaboravili ste lozinku?</a>
+                <h1 class="heading">Države</h1>
+                <table>
+                    <thead>
+                        <th>Naziv</th>
+                        <th>Skraćeni oblik</t>
+                        <th>Produženi oblik</th>
+                        <th>Članica EU</th>
+                    </thead>
+                    <tbody>
+                        <?php
+                            while($red = mysqli_fetch_assoc($rezultat)){
+                                echo '
+                                    <tr> 
+                                        <td>'.$red['naziv'].'</td>
+                                        <td>'.$red['skraceniOblik'].'</td>
+                                        <td>'.$red['produzeniOblik'].'</td>
+                                        <td>'.$red['clanEU'].'</td>
+                                    </tr>
+                                ';
+                            }
+                        ?>
+                        <!-- SAMO ZA ADMINE -->
+                        <tr>
+                            <td><input type="textbox" class="tableInput" id="naziv"></td>
+                            <td><input type="textbox" class="tableInput" id="skraceniOblik"></td>
+                            <td><input type="textbox" class="tableInput" id="produzeniOblik"></td>
+                            <td>
+                                <select class="tableInput" id="clanEU">
+                                <option value="0">False</option>
+                                <option value="1">True</option>
+                            </td>
+                        </tr>
+                        <!--                -->
+                    </tbody>
+                </table>
                     <div class="buttonWrapper">
-                        <input id="submitBtn" type = "submit" value = "Submit" class="submit"><br>
+                        <input id="submitBtn" type = "submit" value = "Submit" class="submit" style="margin-top: 15px;"><br>
                     </div>
-                </form>
             </div>
         </main>  
 

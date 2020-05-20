@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="hr">
     <head>
-        <title>Dokumentacija</title>
+        <title>Računi</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="author" content="Ilija Vuk">
@@ -27,11 +27,11 @@
 
         <nav class="navBar">
             <a href="posiljke.php" class="navLink">Pošiljke</a>
-            <a href="racuni.php" class="navLink">Računi</a>
+            <a href="racuni.php" class="navLink active">Računi</a>
             <a href="uredi.php" class="navLink">Uredi</a>
             <a href="drzave.php" class="navLink">Države</a>
             <a href="o_autoru.html" class="navLink">O autoru</a>
-            <a href="dokumentacija.html" class="navLink active">Dokumentacija</a>
+            <a href="dokumentacija.html" class="navLink">Dokumentacija</a>
             <a href="register.html" class="navLink mobileOnly">Register</a>
             <a href="login.html" class="navLink mobileOnly">Login</a>
         </nav>
@@ -39,7 +39,7 @@
         <div class="footerWrapper">
 		<main>
             <div id="wrapper" class="rotateIn">
-                <h1 class="heading">Dokumentacija</h1>
+                <h1 class="heading">Računi</h1>
                 <span style="font-size: 30px;">Pokušajte kasnije</span>
             </div>
         </main>  

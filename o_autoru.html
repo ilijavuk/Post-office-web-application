@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="hr">
     <head>
-        <title>O autoru</title>
+        <title>Prijava</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="author" content="Ilija Vuk">
@@ -26,11 +26,11 @@
         </header>
 
         <nav class="navBar">
-            <a href="posiljke.html" class="navLink">Pošiljke</a>
-            <a href="racuni.html" class="navLink">Računi</a>
-            <a href="uredi.html" class="navLink">Uredi</a>
-            <a href="drzave.html" class="navLink">Države</a>
-            <a href="o_autoru.html" class="navLink">O autoru</a>
+            <a href="posiljke.php" class="navLink">Pošiljke</a>
+            <a href="racuni.php" class="navLink">Računi</a>
+            <a href="uredi.php" class="navLink">Uredi</a>
+            <a href="drzave.php" class="navLink">Države</a>
+            <a href="o_autoru.html" class="navLink active">O autoru</a>
             <a href="dokumentacija.html" class="navLink">Dokumentacija</a>
             <a href="register.html" class="navLink mobileOnly">Register</a>
             <a href="login.html" class="navLink mobileOnly">Login</a>
@@ -38,15 +38,23 @@
 
         <div class="footerWrapper">
 		<main>
-            <div id="wrapper" class="rotateIn">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque condimentum luctus accumsan. Morbi fringilla nisi sit amet ante accumsan finibus. Mauris rutrum faucibus condimentum. Proin eu iaculis ex, sed vestibulum felis. Nulla non feugiat eros, eget ultricies diam. Phasellus tristique vehicula sapien vel accumsan. Curabitur non fermentum massa. Mauris volutpat accumsan vestibulum. Integer gravida, nulla a consectetur porta, quam ante convallis nibh, a ultrices nisi arcu a quam. Aliquam eu leo vitae enim posuere lobortis. Nulla ipsum odio, condimentum ut nibh in, tincidunt volutpat nisi.
-                </p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque condimentum luctus accumsan. Morbi fringilla nisi sit amet ante accumsan finibus. Mauris rutrum faucibus condimentum. Proin eu iaculis ex, sed vestibulum felis. Nulla non feugiat eros, eget ultricies diam. Phasellus tristique vehicula sapien vel accumsan. Curabitur non fermentum massa. Mauris volutpat accumsan vestibulum. Integer gravida, nulla a consectetur porta, quam ante convallis nibh, a ultrices nisi arcu a quam. Aliquam eu leo vitae enim posuere lobortis. Nulla ipsum odio, condimentum ut nibh in, tincidunt volutpat nisi.
-                </p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque condimentum luctus accumsan. Morbi fringilla nisi sit amet ante accumsan finibus. Mauris rutrum faucibus condimentum. Proin eu iaculis ex, sed vestibulum felis. Nulla non feugiat eros, eget ultricies diam. Phasellus tristique vehicula sapien vel accumsan. Curabitur non fermentum massa. Mauris volutpat accumsan vestibulum. Integer gravida, nulla a consectetur porta, quam ante convallis nibh, a ultrices nisi arcu a quam. Aliquam eu leo vitae enim posuere lobortis. Nulla ipsum odio, condimentum ut nibh in, tincidunt volutpat nisi.
-                </p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque condimentum luctus accumsan. Morbi fringilla nisi sit amet ante accumsan finibus. Mauris rutrum faucibus condimentum. Proin eu iaculis ex, sed vestibulum felis. Nulla non feugiat eros, eget ultricies diam. Phasellus tristique vehicula sapien vel accumsan. Curabitur non fermentum massa. Mauris volutpat accumsan vestibulum. Integer gravida, nulla a consectetur porta, quam ante convallis nibh, a ultrices nisi arcu a quam. Aliquam eu leo vitae enim posuere lobortis. Nulla ipsum odio, condimentum ut nibh in, tincidunt volutpat nisi.
-                </p>
+            <div id="wrapper" class="rotateIn"  style="overflow:visible;">
+                <h1 class="heading">O autoru</h1>
+                <div class="podatciWrapper" >    
+                    <ul class="podatci">
+                        <li>Ime i prezime:</li>
+                        <li><b>Ilija Vuk</b></li>
+                        <li>Matični broj</li>
+                        <li><b>46198/17-R</b></li>
+                        <li>Mail</li>
+                        <li><b><a style="text-decoration: none; color: #000000;" href="mailto:ivuk@foi.hr?subject=Kontakt sa stranice o autoru" target="_blank">ivuk@foi.hr</a></b></li>
+                        <li>Slika autora</li>
+                        <li><img src="multimedija/autor-slika.jpg" alt="Autor" height=100 width=100 /></li>
+                    </ul>
+                    <div class="oAutoruTekst" >
+                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                    </div>
+                </div>
             </div>
         </main>  
 

@@ -41,6 +41,7 @@ $(()=>{
             }
         }
     }
+
     if(window.location.href.includes("uredi")){
         let poljeSPodatcima = '';
         $.ajax({
@@ -52,23 +53,38 @@ $(()=>{
         $vrijednost = $("#select").on('change', function(){
             $("tbody").empty();
             $htmlObject = $(poljeSPodatcima);
-            console.log($htmlObject);
             $val = $vrijednost.val();
+            console.log($val);
             $array = $($htmlObject).children();
             $count = 0;
             $array.each(item => {
                 $item = $array[item];
-                if($($item).children()[3].innerHTML == $val){
+                if($($item).children()[3].innerHTML == $val || $val == "-1"){
                     $("tbody").append($item);
                     $count++;
                 }
-                else{
-                    console.log($($item).children()[3].innerHTML, $val)
-                }
             });
+
             if($count == 0){
-                $("tbody").append("<tr height='24'><td colspan=3>Podatci ne postoje</td></tr>")
+                $("tbody").append("<tr height=30 style='font-size: 28px;'><td colspan=3>Poštanski uredi za trenutno odabranu državu trenutno ne postoje.</td></tr>")
             }
         });
+    }
+    
+    if(window.location.href.includes("drzave")){
+        $("#submitBtn").click(()=>{
+            console.log($("#naziv").val(), $("#skraceniOblik").val(), $("#produzeniOblik").val(), $("#clanEU").val())
+            $.ajax({
+                method: "POST",
+                url: "api.php?insert_drzava",
+                data: {naziv: $("#naziv").val(), skraceniOblik: $("#skraceniOblik").val(), produzeniOblik: $("#produzeniOblik").val(), clanEU:  $("#clanEU").val() },
+            }).done(function(data) {
+                if(data == "Uspjeh"){
+                    $("tbody > tr:last").before(`<tr><td>${$("#naziv").val()}</td><td>${$("#skraceniOblik").val()}</td><td>${$("#produzeniOblik").val()}</td><td>${$("#clanEU").val()}</td></tr>`);
+           
+                }
+            });
+    
+        })
     }
 })

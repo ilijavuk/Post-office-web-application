@@ -6,9 +6,12 @@
     $upit = "SELECT drzava_id, naziv FROM drzava;";
     $rezultat1 = $baza -> SelectDB($upit);
 
-    $upit = "SELECT * FROM postanskiured;";
+    $upit = "SELECT * FROM postanskiured AS t1 LEFT JOIN (SELECT id_pocetniUred, COUNT(*) AS 'broj_posiljki' FROM posiljka GROUP BY id_pocetniUred) AS t2 ON  t1.postanskiUred_id = t2.id_pocetniUred;";
     $rezultat2 = $baza -> SelectDB($upit);
-    
+
+    $upit = "SELECT korisnik_id, ime, prezime, korisnicko_ime FROM korisnik WHERE id_uloga='2';";
+    $rezultat3 = $baza -> SelectDB($upit);    
+    $baza -> zatvoriDB();
 ?>
 
 <!DOCTYPE html>
@@ -39,10 +42,10 @@
         </header>
 
         <nav class="navBar">
-            <a href="posiljke.html" class="navLink">Pošiljke</a>
-            <a href="racuni.html" class="navLink">Računi</a>
-            <a href="uredi.html" class="navLink">Uredi</a>
-            <a href="drzave.html" class="navLink">Države</a>
+            <a href="posiljke.php" class="navLink">Pošiljke</a>
+            <a href="racuni.php" class="navLink">Računi</a>
+            <a href="uredi.php" class="navLink active">Uredi</a>
+            <a href="drzave.php" class="navLink">Države</a>
             <a href="o_autoru.html" class="navLink">O autoru</a>
             <a href="dokumentacija.html" class="navLink">Dokumentacija</a>
             <a href="register.html" class="navLink mobileOnly">Register</a>
@@ -52,10 +55,12 @@
         <div class="footerWrapper">
 		<main>
             <div id="wrapper">
+                <h1 class="heading">Uredi</h1>
                 <div class = "textbox" id="kor_imeTextBox">
-                    <label for="kor_ime">Korisničko ime</label>
+                    <label for="select">Država</label>
                     <select class="select-css" id="select">
-                    <?php
+                        <option value="-1">SVE</option>
+                        <?php
                             while($red = mysqli_fetch_assoc($rezultat1)){
                                 echo '
                                     <option value = '.$red["drzava_id"].'> 
@@ -71,6 +76,7 @@
                         <th>Naziv</th>
                         <th>Adresa</t>
                         <th>Poštanski broj</th>
+                        <th>Broj poslanih pošiljki</th>
                     </thead>
                     <tbody>
                         <?php
@@ -81,12 +87,50 @@
                                         <td>'.$red['adresa'].'</td>
                                         <td>'.$red['postanskiBroj'].'</td>
                                         <td style="display:none">'.$red['id_drzave'].'</td>
+                                        <td>'.$red['broj_posiljki'].'</td>
                                     </tr>
                                 ';
                             }
                         ?>
+                         <!-- SAMO ZA ADMINE -->
+                         <tr>
+                            <td><input type="textbox" class="tableInput" id="naziv"></td>
+                            <td><input type="textbox" class="tableInput" id="adresa"></td>
+                            <td>
+                                <input type="textbox" class="tableInput" id="poštanskiBroj">
+                                <!--
+                                <select class="select-css" id="select2" style="width:50%;">
+                                    <?php
+                                        while($red = mysqli_fetch_assoc($rezultat1)){
+                                            echo '
+                                                <option value = '.$red["drzava_id"].'> 
+                                                    '.$red["naziv"].'
+                                                </option>
+                                            ';
+                                        }
+                                    ?>
+                                </select> 
+                                -->
+                            </td>
+                            <td>
+                                <select class="tableInput" id="moderator">
+                                <?php
+                                    while($red = mysqli_fetch_assoc($rezultat3)){
+                                        echo '
+                                            <option value = '.$red["korisnik_id"].'> 
+                                                '.$red["ime"].' '.$red["prezime"].'('.$red["korisnicko_ime"].')
+                                            </option>
+                                        ';
+                                    }
+                                ?>
+                            </td>
+                        </tr>
+                        <!--                -->
                     </tbody>
                 </table>
+                    <div class="buttonWrapper">
+                        <input id="submitBtn" type = "submit" value = "Submit" class="submit" style="margin-top: 15px;"><br>
+                    </div>
             </div>
         </main>  
 

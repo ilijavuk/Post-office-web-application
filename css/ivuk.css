@@ -251,6 +251,55 @@ tbody>tr:nth-child(odd){
     font-size: 22px;
 }
 
+/* O autoru */
+.podatciWrapper{
+    display: grid;
+    grid-template-rows: auto auto;
+    row-gap: 40px;
+    padding-top: 15px;
+    overflow: visible;
+    font-size: 18px;
+}
+
+.podatci{
+    width: 200px;
+    list-style-type: none;
+    font-size: 20px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 0;
+}
+
+.podatci > li{
+    line-height: 1.7;    
+}
+
+.podatci > li:nth-child(even):hover{
+    transform-origin: 0% 50%;
+    transform: scale(1.25); 
+}
+
+.oAutoruTekst{
+    width: 80%;
+    margin: auto;
+    border: 2px solid #AFAFAF; 
+    padding: 15px; 
+    border-radius: 5px;
+    box-shadow: 10px 10px 27px 10px rgba(241,205,123,1);
+}
+
+.oAutoruTekst:hover{
+    box-shadow: 10px 10px 27px 10px rgba(241,205,123,1);
+}
+
+/* drzave */
+.tableInput{
+    width: 100%;
+    height: 29px;
+    font-size: 22px;
+
+}
+
 @keyframes slide-in {
     100% { transform: translateX(0%); }
 }
@@ -273,7 +322,6 @@ tbody>tr:nth-child(odd){
     .submit{
         width: 200px;
     }
-    
 }
 
 @media only screen and (min-width: 1034px){
@@ -302,6 +350,11 @@ tbody>tr:nth-child(odd){
         display: inline-block;
     }
 
+    .submit:hover{
+        background-color: #4ca758;
+        color: #ffffff;
+    }
+
     .navButton{
         display: none;
     }
@@ -327,20 +380,48 @@ tbody>tr:nth-child(odd){
         width: 100%;
         border-right: 2px solid #707070;
         border-bottom: none;
+        text-decoration: underline solid transparent;
     }
     
     .navLink:nth-of-type(6){
         border-right: none;
     }
 
-     #wrapper{
+    .navLink:hover{
+        transition: 0.5s;
+        text-decoration: underline solid #707070;
+    }
+
+    .active{
+        text-decoration: underline solid #707070;
+    }
+
+
+    #wrapper{
         width: 60%;
     }
 
     .buttonWrapper{
         float: right;
     }
+
+    .podatciWrapper{
+        grid-template-rows: auto;
+        grid-template-columns: auto auto;
+    }
+
+    .podatci{
+        text-align: left;
+    }
+
+    .oAutoruTekst{
+        width: 100%;
+        height: 100%;
+        font-size: 20px;
+    }
+
     
+
     @keyframes slide-out {
         0% { transform: translateX(0%); }
         100% { transform: translateX(0%); }
