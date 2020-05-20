@@ -234,6 +234,13 @@ label{
     display:none;
 }
 
+table{
+    width: 100%;
+}
+tbody>tr:nth-child(odd){
+    background-color: #f1cd7b;
+}
+
 @keyframes slide-in {
     100% { transform: translateX(0%); }
 }

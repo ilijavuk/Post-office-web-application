@@ -18,8 +18,6 @@ $(()=>{
             $($(".navBar")[0]).addClass('slide-in');
             $($(".navBar")[0]).removeClass('slide-out');
         }
-        console.log($( window ).width());
-        $($(".header")[0]).attr('width', $( window ).width());
     });
 
     if(window.location.href.includes("login")){
@@ -42,5 +40,8 @@ $(()=>{
                 $("#e_mailTextBox").hide();
             }
         }
+    }
+    if(window.location.href.includes("uredi")){
+        $vrijednost = $("#select").val;
     }
 })
