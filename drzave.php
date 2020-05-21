@@ -4,7 +4,8 @@
     $baza -> spojiDB();
 
     $upit = "SELECT * FROM drzava;";
-    $rezultat = $baza -> SelectDB($upit);
+    $rezultat = $baza -> SelectDB($upit); 
+    $baza -> zatvoriDB();
 ?>
 
 <!DOCTYPE html>
@@ -84,7 +85,7 @@
                     </tbody>
                 </table>
                     <div class="buttonWrapper">
-                        <input id="submitBtn" type = "submit" value = "Submit" class="submit" style="margin-top: 15px;"><br>
+                        <input id="submitBtn" type = "submit" value = "Add" class="submit" style="margin-top: 15px; width: 150px;"><br>
                     </div>
             </div>
         </main>  

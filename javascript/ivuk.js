@@ -51,10 +51,10 @@ $(()=>{
         });
 
         $vrijednost = $("#select").on('change', function(){
-            $("tbody").empty();
+            var zadnji = document.getElementsByTagName("tbody")[0].lastElementChild;
+             $("tbody").empty();
             $htmlObject = $(poljeSPodatcima);
             $val = $vrijednost.val();
-            console.log($val);
             $array = $($htmlObject).children();
             $count = 0;
             $array.each(item => {
@@ -66,25 +66,31 @@ $(()=>{
             });
 
             if($count == 0){
-                $("tbody").append("<tr height=30 style='font-size: 28px;'><td colspan=3>Poštanski uredi za trenutno odabranu državu trenutno ne postoje.</td></tr>")
+                $("tbody").append("<tr height=30 style='font-size: 28px;'><td colspan=5>Poštanski uredi za trenutno odabranu državu trenutno ne postoje.</td></tr>")
             }
+            $("tbody").append(zadnji);
         });
     }
     
     if(window.location.href.includes("drzave")){
         $("#submitBtn").click(()=>{
             console.log($("#naziv").val(), $("#skraceniOblik").val(), $("#produzeniOblik").val(), $("#clanEU").val())
-            $.ajax({
-                method: "POST",
-                url: "api.php?insert_drzava",
-                data: {naziv: $("#naziv").val(), skraceniOblik: $("#skraceniOblik").val(), produzeniOblik: $("#produzeniOblik").val(), clanEU:  $("#clanEU").val() },
-            }).done(function(data) {
-                if(data == "Uspjeh"){
-                    $("tbody > tr:last").before(`<tr><td>${$("#naziv").val()}</td><td>${$("#skraceniOblik").val()}</td><td>${$("#produzeniOblik").val()}</td><td>${$("#clanEU").val()}</td></tr>`);
-           
-                }
-            });
-    
+            if($("#naziv").val() == "" || $("#skraceniOblik").val() == "" || $("produzeniOblik").val() == "")
+            {
+                alert("ne valja");
+            }
+            else{
+                $.ajax({
+                    method: "POST",
+                    url: "api.php?insert_drzava",
+                    data: {naziv: $("#naziv").val(), skraceniOblik: $("#skraceniOblik").val(), produzeniOblik: $("#produzeniOblik").val(), clanEU:  $("#clanEU").val() },
+                }).done(function(data) {
+                    if(data == "Uspjeh"){
+                        $("tbody > tr:last").before(`<tr><td>${$("#naziv").val()}</td><td>${$("#skraceniOblik").val()}</td><td>${$("#produzeniOblik").val()}</td><td>${$("#clanEU").val()}</td></tr>`);
+               
+                    }
+                });
+            }
         })
     }
 })

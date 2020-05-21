@@ -89,18 +89,20 @@
                                         <td style="display:none">'.$red['id_drzave'].'</td>
                                         <td>'.$red['broj_posiljki'].'</td>
                                     </tr>
-                                ';
+                                ';   
                             }
+                         
                         ?>
+                        
                          <!-- SAMO ZA ADMINE -->
                          <tr>
                             <td><input type="textbox" class="tableInput" id="naziv"></td>
                             <td><input type="textbox" class="tableInput" id="adresa"></td>
-                            <td>
-                                <input type="textbox" class="tableInput" id="poštanskiBroj">
-                                <!--
-                                <select class="select-css" id="select2" style="width:50%;">
+                            <td style="display: inline; white-space: nowrap;">
+                                <input type="textbox" class="tableInput" id="poštanskiBroj" style="width: 40%;">
+                                <select class="select-css" id="select" style="position: relative; top: 1px; width: 60%; height: 29px; margin-left: -8px;  border-left: none;">
                                     <?php
+                                        $rezultat1->data_seek(0);
                                         while($red = mysqli_fetch_assoc($rezultat1)){
                                             echo '
                                                 <option value = '.$red["drzava_id"].'> 
@@ -110,7 +112,6 @@
                                         }
                                     ?>
                                 </select> 
-                                -->
                             </td>
                             <td>
                                 <select class="tableInput" id="moderator">

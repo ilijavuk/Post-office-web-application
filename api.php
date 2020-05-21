@@ -3,8 +3,8 @@
         require("baza.class.php"); 
         $baza = new Baza;
         $baza -> spojiDB();
-        $upit = "SELECT * FROM postanskiured;";
-        $rezultat2 = $baza -> SelectDB($upit);
+        $upit = "SELECT * FROM postanskiured AS t1 LEFT JOIN (SELECT id_pocetniUred, COUNT(*) AS 'broj_posiljki' FROM posiljka GROUP BY id_pocetniUred) AS t2 ON  t1.postanskiUred_id = t2.id_pocetniUred;";
+    $rezultat2 = $baza -> SelectDB($upit);
         echo '<tbody>';
         while($red = mysqli_fetch_assoc($rezultat2)){
             echo '
@@ -13,6 +13,7 @@
                     <td>'.$red['adresa'].'</td>
                     <td>'.$red['postanskiBroj'].'</td>
                     <td style="display:none">'.$red['id_drzave'].'</td>
+                    <td>'.$red['broj_posiljki'].'</td>
                 </tr>
             ';
         }
