@@ -1,6 +1,6 @@
 Administrator 
-    kreira države
-    kreira urede(odabire državu, dodjeljuje moderatore), naziv i adresa ureda
+ •   kreira države
+ •   kreira urede(odabire državu, dodjeljuje moderatore), naziv i adresa ureda
     prihvaća pošiljku (unijeti cijenu/kg, odabir početnog/završnog ureda)
 Moderator 
     prima pošiljku te ju šalje idućem uredu ili označava pošiljku kao spremna za isporuku
@@ -35,5 +35,9 @@ uredi.php
 racuni.php - moderator(pregled zahtjeva) - korisnik(pregled računa)
 posiljke.php
 
-države - (admin) kreiranje 
-uredi - (admin) kreiranje, 
+•uredi - (admin) kreiranje, (korisnik) pregled, sortiranje, filtriranje
+•države - (admin) kreiranje, (korisnik) pregled 
+•računi - (moderator) popis računa, označeni neplaćeni, (korisnik) pregled računa, plaćanje uz prilaganje slike
+pošiljke - (admin) prihvaćanje pošiljki, (moderator) statistika plaćenih/neplaćenih pošiljki u razdoblju od-do 
+    (korisnik) pregled pošiljki koje prima, pregled poslanih pošiljki i prikaz gdje su, ako su spremne onda može tražiti račun račun
+    (neregistrirani) pregled slika dostavljenih

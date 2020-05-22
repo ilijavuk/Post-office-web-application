@@ -76,7 +76,7 @@
                         <th>Naziv</th>
                         <th>Adresa</t>
                         <th>Poštanski broj</th>
-                        <th>Broj poslanih pošiljki</th>
+                        <th id="broj_posiljki">Broj pošiljki</th>
                     </thead>
                     <tbody>
                         <?php

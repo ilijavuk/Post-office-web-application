@@ -4,7 +4,7 @@
         $baza = new Baza;
         $baza -> spojiDB();
         $upit = "SELECT * FROM postanskiured AS t1 LEFT JOIN (SELECT id_pocetniUred, COUNT(*) AS 'broj_posiljki' FROM posiljka GROUP BY id_pocetniUred) AS t2 ON  t1.postanskiUred_id = t2.id_pocetniUred;";
-    $rezultat2 = $baza -> SelectDB($upit);
+        $rezultat2 = $baza -> SelectDB($upit);
         echo '<tbody>';
         while($red = mysqli_fetch_assoc($rezultat2)){
             echo '
@@ -20,9 +20,27 @@
         echo '</tbody>';
     }
 
+    if(isset($_GET['insert_postanskiUred'])){
+        require("baza.class.php"); 
+        $baza = new Baza;
+        $veza = $baza -> spojiDB();
+        $stmt = $veza -> prepare("INSERT INTO postanskiured (naziv, skraceniOblik, produzeniOblik, clanEU) VALUES (?, ?, ?, ?);");
+        if($stmt == null){
+            echo 'Neuspjeh';
+        }
+        else{
+            $stmt -> bind_param("sssi", $_POST['naziv'], $_POST['skraceniOblik'], $_POST['produzeniOblik'], $_POST['clanEU']);
+            $stmt -> execute();
+            if($stmt->affected_rows > 0){
+                echo "Uspjeh";
+            }
+            else{
+                echo "Neuspjeh";
+            }
+        }
+    }
+
     if(isset($_GET['insert_drzava'])){
-        /*echo $_POST['naziv']. " ".$_POST['skraceniOblik']. " ".$_POST['produzeniOblik']. " ".$_POST['clanEU'];
-        */
         require("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
@@ -32,6 +50,26 @@
         }
         else{
             $stmt -> bind_param("sssi", $_POST['naziv'], $_POST['skraceniOblik'], $_POST['produzeniOblik'], $_POST['clanEU']);
+            $stmt -> execute();
+            if($stmt->affected_rows > 0){
+                echo "Uspjeh";
+            }
+            else{
+                echo "Neuspjeh";
+            }
+        }
+    }
+
+    if(isset($_GET['update_racun'])){
+        require("baza.class.php"); 
+        $baza = new Baza;
+        $veza = $baza -> spojiDB();
+        $stmt = $veza -> prepare("UPDATE racun SET placen='1', slika=? WHERE racun_id = ?;");
+        if($stmt == null){
+            echo 'Neuspjeh';
+        }
+        else{
+            $stmt -> bind_param("ss", $_POST['slika'], $_POST['racun_id']);
             $stmt -> execute();
             if($stmt->affected_rows > 0){
                 echo "Uspjeh";

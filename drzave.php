@@ -84,9 +84,9 @@
                         <!--                -->
                     </tbody>
                 </table>
-                    <div class="buttonWrapper">
-                        <input id="submitBtn" type = "submit" value = "Add" class="submit" style="margin-top: 15px; width: 150px;"><br>
-                    </div>
+                <div class="buttonWrapper">
+                    <input id="submitBtn" type = "submit" value = "Add" class="submit" style="margin-top: 15px; width: 150px;"><br>
+                </div>
             </div>
         </main>  
 

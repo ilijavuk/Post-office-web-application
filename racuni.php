@@ -1,3 +1,25 @@
+<?php
+    require("baza.class.php"); 
+    $baza = new Baza;
+    $baza -> spojiDB();
+
+
+    $uloga = 2;
+    $kor_id = 1;
+
+
+    $rezultat2 = nulL;
+    if($uloga != null && $uloga >= 2){
+        $upit = "SELECT * FROM racun AS t1 LEFT JOIN (SELECT id_posiljatelja, posiljka_id FROM posiljka) AS t2 ON t1.id_posiljka = t2.posiljka_id;";
+        $rezultat2 = $baza -> SelectDB($upit);
+    }
+    $upit = "SELECT * FROM racun AS t1 LEFT JOIN (SELECT id_posiljatelja, posiljka_id FROM posiljka) AS t2 ON t1.id_posiljka = t2.posiljka_id  WHERE t2.id_posiljatelja='".$kor_id."';";
+    $rezultat = $baza -> SelectDB($upit);  
+    
+
+    $baza -> zatvoriDB();
+?>
+
 <!DOCTYPE html>
 <html lang="hr">
     <head>
@@ -35,19 +57,114 @@
             <a href="register.html" class="navLink mobileOnly">Register</a>
             <a href="login.html" class="navLink mobileOnly">Login</a>
         </nav>
-
+        
         <div class="footerWrapper">
 		<main>
-            <div id="wrapper" class="rotateIn">
+             <div id="wrapper">
                 <h1 class="heading">Računi</h1>
-                <span style="font-size: 30px;">Pokušajte kasnije</span>
-            </div>
+                <?php
+                    if($uloga != null && $uloga >= 2){
+                        echo '
+                        <div class="switchShowingWrapper">
+                            <div id="showingLeft" class="switchShowing activeShow">Moji računi</div>
+                            <div id="showingRight" class="switchShowing">Svi računi</div>
+                        </div>
+                        ';
+                    }
+                ?>
+                
+                <table>
+                    <thead>
+                        <th>Vrijeme izdavanja</th>
+                        <th>Plaćen</t>
+                        <th>Iznos pošiljke</th>
+                        <th>Puni iznos</th>
+                        <th>Slika</th>
+                    </thead>
+                    <tbody>
+                            <?php
+                                while($red = mysqli_fetch_assoc($rezultat)){
+                                    if($red['placen'] == 0){        
+                                        echo '<tr style="color: red; cursor:pointer;" class="my neplacen">';
+                                    }
+                                    else{
+                                        echo '<tr class="my">';
+                                    }
+                                    echo   '<td>'.$red['vrijemeIzdavanja'].'</td>
+                                            <td>'.$red['placen'].'</td>
+                                            <td>'.$red['iznos'].' kn</td>
+                                            <td>'.$red['puniIznos'].' kn</td>
+                                            <td style="text-align:center;"><img src="'.$red['slika'].'"  height=50/></td>
+                                            <td style="display:none;">'.$red['racun_id'].'</td>
+                                        </tr>';   
+                                }
+                            ?>
+                            <?php 
+                                if($rezultat2 != null){
+                                while($red = mysqli_fetch_assoc($rezultat2)){
+                                        if($red['placen'] == 0){        
+                                            echo '<tr style="color: red; display: none; cursor:pointer;" class="all neplacen">';
+                                        }
+                                        else{
+                                            echo '<tr class="all" style="display: none;">';
+                                        }
+                                        echo   '<td>'.$red['vrijemeIzdavanja'].'</td>
+                                                <td>'.$red['placen'].'</td>
+                                                <td>'.$red['iznos'].' kn</td>
+                                                <td>'.$red['puniIznos'].' kn</td>
+                                                <td style="text-align:center;"><img src="'.$red['slika'].'"  height=50/></td>
+                                                <td style="display:none;">'.$red['racun_id'].'</td>
+                                            </tr>';   
+                                    }
+                                }
+                            ?>
+                    </tbody>
+                </table>
+                
+              
+            
         </main>  
-
         <footer class="footer">
             <span class="footerText">2020, Vuk Ilija</span>+
         </footer>  
         </div>
+        <div id="overlay">
+        </div>
+
+        <div class="modal"> 
+            <div class = "textbox" style="display:none;">
+                <label for="racun_id">ID Računa</label>
+                <input type = "text" name = "racun_id" id="racun_id" class="text" disabled><br>
+            </div>
+            <div class = "textbox">
+                <label for="vrijemeIzdavanja">Vrijeme izdavanja</label>
+                <input type = "text" name = "vrijemeIzdavanja" id="vrijemeIzdavanja" class="text" disabled><br>
+            </div>
+            <div class = "textbox">
+                <label for="rokPlacanja">Rok plaćanja</label>
+                <input type = "text" name = "rokPlacanja" id="rokPlacanja" class="text"  disabled><br>
+            </div>
+            <div class = "textbox">
+                <label for="placen">Plaćen</label>
+                <input type = "text" name = "placen" id="placen" class="text" disabled><br>
+            </div>
+            <div class = "textbox">
+                <label for="iznos">Iznos pošiljke</label>
+                <input type = "text" name = "iznos" id="iznos" class="text" disabled><br>
+            </div>
+            <div class = "textbox">
+                <label for="puniIznos">Puni iznos</label>
+                <input type = "text" name = "puniIznos" id="puniIznos" class="text" disabled><br>
+            </div>
+            <div class = "textbox">
+                <label for="slika">Slika(URL)</label>
+                <input type = "text" name = "slika" id="slika" class="text"><br>
+            </div>
+            <div class="buttonWrapper" style="width: 100%;">
+                <input id="submitBtn" type = "submit" value = "Add" class="button" style="margin: 0 auto; width: 150px;"><br>
+            </div>
+        </div>
+    </div>
     </body>
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="javascript/ivuk.js"></script>
