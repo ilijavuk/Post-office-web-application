@@ -6,7 +6,8 @@
     $upit = "SELECT drzava_id, naziv FROM drzava;";
     $rezultat1 = $baza -> SelectDB($upit);
 
-    $upit = "SELECT * FROM postanskiured AS t1 LEFT JOIN (SELECT id_pocetniUred, COUNT(*) AS 'broj_posiljki' FROM posiljka GROUP BY id_pocetniUred) AS t2 ON  t1.postanskiUred_id = t2.id_pocetniUred;";
+    $upit = "SELECT * FROM postanskiured AS t1 LEFT JOIN (SELECT id_pocetniUred, COUNT(*) AS 'broj_poslanih' FROM posiljka GROUP BY id_pocetniUred) AS t2 ON  t1.postanskiUred_id = t2.id_pocetniUred INNER JOIN ( 
+        SELECT postanskiUred_id, t4.broj_primljenih FROM postanskiured AS t3 LEFT JOIN (SELECT id_konacniUred, COUNT(*) AS 'broj_primljenih' FROM posiljka GROUP BY id_konacniUred) AS t4 ON  t3.postanskiUred_id = t4.id_konacniUred) AS q2 ON q2.postanskiUred_id=t1.postanskiUred_id";
     $rezultat2 = $baza -> SelectDB($upit);
 
     $upit = "SELECT korisnik_id, ime, prezime, korisnicko_ime FROM korisnik WHERE id_uloga='2';";
@@ -56,27 +57,36 @@
 		<main>
             <div id="wrapper">
                 <h1 class="heading">Uredi</h1>
-                <div class = "textbox" id="kor_imeTextBox">
-                    <label for="select">Država</label>
-                    <select class="select-css" id="select">
-                        <option value="-1">SVE</option>
-                        <?php
-                            while($red = mysqli_fetch_assoc($rezultat1)){
-                                echo '
-                                    <option value = '.$red["drzava_id"].'> 
-                                        '.$red["naziv"].'
-                                    </option>
-                                ';
-                            }
-                        ?>
-                    </select> 
+                <div class="switchShowingWrapper posiljkeSwitch" style="border: none;">
+                    <div class = "textbox" id="kor_imeTextBox">
+                        <label for="select">Država</label>
+                        <select class="select-css" id="select" style="width: 100%; height: 42px;">
+                            <option value="-1">SVE</option>
+                            <?php
+                                while($red = mysqli_fetch_assoc($rezultat1)){
+                                    echo '
+                                        <option value = '.$red["drzava_id"].'> 
+                                            '.$red["naziv"].'
+                                        </option>
+                                    ';
+                                }
+                            ?>
+                        </select> 
+                    
+                    </div>  
+                    <div class = "textbox" id="kor_imeTextBox">
+                        <label for="search">Pretraži</label>
+                        <input type = "text" name = "search" id="search" class="text" style="border: 1px solid #707070;"><br>
+                    </div>
                 </div>
+                
                 <table>
                     <thead>
                         <th>Naziv</th>
                         <th>Adresa</t>
                         <th>Poštanski broj</th>
-                        <th id="broj_posiljki">Broj pošiljki</th>
+                        <th id="broj_poslanih">Broj poslanih</th>
+                        <th id="broj_primljenih">Broj primljenih</th>
                     </thead>
                     <tbody>
                         <?php
@@ -87,7 +97,8 @@
                                         <td>'.$red['adresa'].'</td>
                                         <td>'.$red['postanskiBroj'].'</td>
                                         <td style="display:none">'.$red['id_drzave'].'</td>
-                                        <td>'.$red['broj_posiljki'].'</td>
+                                        <td>'.$red['broj_poslanih'].'</td>
+                                        <td>'.$red['broj_primljenih'].'</td>
                                     </tr>
                                 ';   
                             }
@@ -98,9 +109,10 @@
                          <tr>
                             <td><input type="textbox" class="tableInput" id="naziv"></td>
                             <td><input type="textbox" class="tableInput" id="adresa"></td>
-                            <td style="display: inline; white-space: nowrap;">
-                                <input type="textbox" class="tableInput" id="poštanskiBroj" style="width: 40%;">
-                                <select class="select-css" id="select" style="position: relative; top: 1px; width: 60%; height: 29px; margin-left: -8px;  border-left: none;">
+                            <td>
+                                <input type="textbox" class="tableInput" id="poštanskiBroj">
+                            </td>
+                            <td>  <select class="select-css" id="select" style="height: 29px; ">
                                     <?php
                                         $rezultat1->data_seek(0);
                                         while($red = mysqli_fetch_assoc($rezultat1)){

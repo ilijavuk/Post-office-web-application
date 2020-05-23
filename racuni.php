@@ -5,7 +5,7 @@
 
 
     $uloga = 2;
-    $kor_id = 1;
+    $kor_id = 4;
 
 
     $rezultat2 = nulL;
@@ -62,6 +62,7 @@
 		<main>
              <div id="wrapper">
                 <h1 class="heading">Računi</h1>
+                <h2 id="greska" style="color:red;"></h2>
                 <?php
                     if($uloga != null && $uloga >= 2){
                         echo '
@@ -85,7 +86,7 @@
                             <?php
                                 while($red = mysqli_fetch_assoc($rezultat)){
                                     if($red['placen'] == 0){        
-                                        echo '<tr style="color: red; cursor:pointer;" class="my neplacen">';
+                                        echo '<tr style="outline: 5px solid red; cursor:pointer;" class="my neplacen">';
                                     }
                                     else{
                                         echo '<tr class="my">';
@@ -103,7 +104,7 @@
                                 if($rezultat2 != null){
                                 while($red = mysqli_fetch_assoc($rezultat2)){
                                         if($red['placen'] == 0){        
-                                            echo '<tr style="color: red; display: none; cursor:pointer;" class="all neplacen">';
+                                            echo '<tr style="outline: 5px solid red; display: none; cursor:pointer;" class="all neplacenModerator">';
                                         }
                                         else{
                                             echo '<tr class="all" style="display: none;">';
@@ -114,6 +115,7 @@
                                                 <td>'.$red['puniIznos'].' kn</td>
                                                 <td style="text-align:center;"><img src="'.$red['slika'].'"  height=50/></td>
                                                 <td style="display:none;">'.$red['racun_id'].'</td>
+                                                <td style="display:none;">'.$red['rokZaPlacanje'].'</td>
                                             </tr>';   
                                     }
                                 }
@@ -136,35 +138,61 @@
                 <label for="racun_id">ID Računa</label>
                 <input type = "text" name = "racun_id" id="racun_id" class="text" disabled><br>
             </div>
-            <div class = "textbox">
-                <label for="vrijemeIzdavanja">Vrijeme izdavanja</label>
-                <input type = "text" name = "vrijemeIzdavanja" id="vrijemeIzdavanja" class="text" disabled><br>
+            <div id="updateRacun" style="display: none;">
+                <div class = "textbox">
+                    <label for="vrijemeIzdavanja">Vrijeme izdavanja</label>
+                    <input type = "text" name = "vrijemeIzdavanja" id="vrijemeIzdavanja" class="text" disabled><br>
+                </div>
+                <div class = "textbox">
+                    <label for="rokPlacanja">Rok plaćanja</label>
+                    <input type = "text" name = "rokPlacanja" id="rokPlacanja" class="text"  disabled><br>
+                </div>
+                <div class = "textbox">
+                    <label for="placen">Plaćen</label>
+                    <input type = "text" name = "placen" id="placen" class="text" disabled><br>
+                </div>
+                <div class = "textbox">
+                    <label for="iznos">Iznos pošiljke</label>
+                    <input type = "text" name = "iznos" id="iznos" class="text" disabled><br>
+                </div>
+                <div class = "textbox">
+                    <label for="puniIznos">Puni iznos</label>
+                    <input type = "text" name = "puniIznos" id="puniIznos" class="text" disabled><br>
+                </div>
+                <div class = "textbox">
+                    <label for="slika">Slika(URL)</label>
+                    <input type = "text" name = "slika" id="slika" class="text"><br>
+                </div>
+                <div class="buttonWrapper" style="width: 100%;">
+                    <input id="submitBtn" type = "submit" value = "Add" class="button add" style="margin: 0 auto; width: 150px;"><br>
+                </div>
             </div>
-            <div class = "textbox">
-                <label for="rokPlacanja">Rok plaćanja</label>
-                <input type = "text" name = "rokPlacanja" id="rokPlacanja" class="text"  disabled><br>
-            </div>
-            <div class = "textbox">
-                <label for="placen">Plaćen</label>
-                <input type = "text" name = "placen" id="placen" class="text" disabled><br>
-            </div>
-            <div class = "textbox">
-                <label for="iznos">Iznos pošiljke</label>
-                <input type = "text" name = "iznos" id="iznos" class="text" disabled><br>
-            </div>
-            <div class = "textbox">
-                <label for="puniIznos">Puni iznos</label>
-                <input type = "text" name = "puniIznos" id="puniIznos" class="text" disabled><br>
-            </div>
-            <div class = "textbox">
-                <label for="slika">Slika(URL)</label>
-                <input type = "text" name = "slika" id="slika" class="text"><br>
-            </div>
-            <div class="buttonWrapper" style="width: 100%;">
-                <input id="submitBtn" type = "submit" value = "Add" class="button" style="margin: 0 auto; width: 150px;"><br>
+            <div id="blokirajKorisnika" style="display:none;">
+                <div class = "textbox">
+                    <label for="korisnik_id">ID korisnika</label>
+                    <input type = "text" name = "korisnik_id" id="korisnik_id" class="text" disabled><br>
+                </div>
+                <div class = "textbox" style="display: none;">
+                    <label for="rok">Rok</label>
+                    <input type = "text" name = "rok" id="rok" class="text" disabled><br>
+                </div>
+                <div class = "textbox">
+                    <label for="ime_korisnika">Ime korisnika</label>
+                    <input type = "text" name = "ime_korisnika" id="ime_korisnika" class="text" disabled><br>
+                </div>
+                <div class = "textbox">
+                    <label for="rok_za_placanje">Rok plaćanja</label>
+                    <input type = "text" name = "rok_za_placanje" id="rok_za_placanje" class="text" disabled><br>
+                </div>
+                <div class = "textbox">
+                    <label for="blokirajNa">Blokiraj korisnika na(broj sati)</label>
+                    <input type = "number" name = "blokirajNa" id="blokirajNa" value="168" class="text"><br>
+                </div> 
+                <div id="buttonWrapperBlock" class="buttonWrapper" style="width: 100%; display:none">
+                    <input id="blockBtn" type = "submit" value = "Blokiraj" class="button add" style="margin: 0 auto; width: 150px;"><br>
+                </div>       
             </div>
         </div>
-    </div>
     </body>
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="javascript/ivuk.js"></script>

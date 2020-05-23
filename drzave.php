@@ -6,6 +6,8 @@
     $upit = "SELECT * FROM drzava;";
     $rezultat = $baza -> SelectDB($upit); 
     $baza -> zatvoriDB();
+
+    
 ?>
 
 <!DOCTYPE html>

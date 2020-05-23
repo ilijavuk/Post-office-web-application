@@ -4,6 +4,10 @@
     box-sizing: border-box;
 }
 
+body{
+    overflow-x: hidden;
+}
+
 main{
     position: relative;
     perspective: 1000px;
@@ -22,7 +26,6 @@ main{
     margin: auto;
     display: block;
     box-sizing: border-box;
-    overflow: visible;
 }
 
 .rotateIn{
@@ -97,6 +100,10 @@ main{
     align-self: center;
     color: #ffffff;
     font-size: 24px;
+}
+
+.button.add{
+    display: inline-block;
 }
 
 .button:hover{
@@ -329,6 +336,7 @@ tbody>tr:nth-child(odd){
 }
 
 .modal{
+    box-sizing: border-box;
     display: none;
     position: fixed;
     width: 90%;
@@ -355,16 +363,23 @@ tbody>tr:nth-child(odd){
 }
 
 /* Pošiljke mobile */
-.gallery{
+.gallery{ 
+    display: grid;
     width: 100%;
-    grid-template-columns: 1fr;
-    grid-auto-rows: 150px;
     background-color: #f1cd7b;
+    grid-auto-rows: 1fr;
+    gap: 15px;
+    align-content: stretch;
 }
 
 .galleryFigure{
-    width: 100%;
-    object-fit: contain;
+    height: 100%;
+    vertical-align: middle;
+    object-fit: cover;
+}
+
+.galleryFigure > img{
+    height: 100%;
 }
 
 @keyframes slide-in {
@@ -404,6 +419,12 @@ tbody>tr:nth-child(odd){
     }
 
     /* Pošiljke tablet */
+    .gallery{ 
+        grid-template-columns: 1fr 1fr;
+        grid-auto-rows: none;
+        gap: 15px;
+    }
+
     .switchShowingWrapper.posiljkeSwitch{
         grid-auto-flow: column;
     }
@@ -518,10 +539,16 @@ tbody>tr:nth-child(odd){
         cursor: pointer!important;
     }
 
-    /* Pošiljke tablet */
+    /* Pošiljke desktop */
     .switchShowingWrapper.posiljkeSwitch{
         width: 50%;
-        grid-auto-flow: column;
+    }
+
+    .gallery{
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 15px;
+        column-gap: 15px;
     }
 
     @keyframes showing-right {
