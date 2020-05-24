@@ -14,6 +14,12 @@ main{
     margin-top: calc( 85px + 50px );
 }
 
+#greska{
+    font-size: 20px;
+    font-weight: 500;
+    color:red;
+}
+
 .footerWrapper{
     display: grid;
     grid-template-rows: auto 100px;
@@ -313,11 +319,7 @@ tbody>tr:nth-child(odd){
     width: 100%;
     margin-bottom: 15px;
     border: 2px solid #707070;
-    grid-auto-flow: column;
     grid-auto-columns: 1fr;
-}
-
-.switchShowingWrapper.posiljkeSwitch{
     grid-auto-flow: row;
 }
 
@@ -340,7 +342,8 @@ tbody>tr:nth-child(odd){
     display: none;
     position: fixed;
     width: 90%;
-    top: 15%;
+    top:50%;
+    transform: translateY(-50%);
     left: 5%;
     z-index: 3;
     border: 1px solid #707070;
@@ -425,7 +428,7 @@ tbody>tr:nth-child(odd){
         gap: 15px;
     }
 
-    .switchShowingWrapper.posiljkeSwitch{
+    .switchShowingWrapper{
         grid-auto-flow: column;
     }
 }
@@ -532,7 +535,7 @@ tbody>tr:nth-child(odd){
 
     /* Računi desktop */ 
     .switchShowingWrapper{
-        width: 25%;
+        width: 50%;
     }
 
     .switchShowing:hover{
@@ -540,10 +543,6 @@ tbody>tr:nth-child(odd){
     }
 
     /* Pošiljke desktop */
-    .switchShowingWrapper.posiljkeSwitch{
-        width: 50%;
-    }
-
     .gallery{
         display: grid;
         grid-template-columns: 1fr 1fr 1fr;

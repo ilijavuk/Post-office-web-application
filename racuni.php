@@ -2,21 +2,19 @@
     require("baza.class.php"); 
     $baza = new Baza;
     $baza -> spojiDB();
-
-
-    $uloga = 2;
-    $kor_id = 4;
-
+    session_start();
 
     $rezultat2 = nulL;
-    if($uloga != null && $uloga >= 2){
-        $upit = "SELECT * FROM racun AS t1 LEFT JOIN (SELECT id_posiljatelja, posiljka_id FROM posiljka) AS t2 ON t1.id_posiljka = t2.posiljka_id;";
-        $rezultat2 = $baza -> SelectDB($upit);
+    if($_SESSION['uloga'] >= 1){
+        $upit = "SELECT * FROM racun AS t1 LEFT JOIN (SELECT id_posiljatelja, posiljka_id FROM posiljka) AS t2 ON t1.id_posiljka = t2.posiljka_id  WHERE t2.id_posiljatelja='".$_SESSION['kor_id']."';";
+        $rezultat = $baza -> SelectDB($upit);  
+        if($_SESSION['uloga']  >= 2){
+            $upit = "SELECT * FROM racun AS t1 LEFT JOIN (SELECT id_posiljatelja, posiljka_id FROM posiljka) AS t2 ON t1.id_posiljka = t2.posiljka_id;";
+            $rezultat2 = $baza -> SelectDB($upit);
+            $upit = "SELECT * FROM racun WHERE id_moderatora=".$_SESSION['kor_id']." AND puniIznos IS NULL;";
+            $rezultat3 = $baza -> SelectDB($upit);
+        }
     }
-    $upit = "SELECT * FROM racun AS t1 LEFT JOIN (SELECT id_posiljatelja, posiljka_id FROM posiljka) AS t2 ON t1.id_posiljka = t2.posiljka_id  WHERE t2.id_posiljatelja='".$kor_id."';";
-    $rezultat = $baza -> SelectDB($upit);  
-    
-
     $baza -> zatvoriDB();
 ?>
 
@@ -64,67 +62,114 @@
                 <h1 class="heading">Računi</h1>
                 <h2 id="greska" style="color:red;"></h2>
                 <?php
-                    if($uloga != null && $uloga >= 2){
+                    if($_SESSION['uloga']  >= 2){
                         echo '
                         <div class="switchShowingWrapper">
                             <div id="showingLeft" class="switchShowing activeShow">Moji računi</div>
-                            <div id="showingRight" class="switchShowing">Svi računi</div>
+                            <div id="showingMiddle" class="switchShowing">Izdani</div>
+                            <div id="showingRight" class="switchShowing">Zahtjevi</div>
                         </div>
                         ';
                     }
                 ?>
-                
-                <table>
-                    <thead>
-                        <th>Vrijeme izdavanja</th>
-                        <th>Plaćen</t>
-                        <th>Iznos pošiljke</th>
-                        <th>Puni iznos</th>
-                        <th>Slika</th>
-                    </thead>
-                    <tbody>
-                            <?php
-                                while($red = mysqli_fetch_assoc($rezultat)){
-                                    if($red['placen'] == 0){        
-                                        echo '<tr style="outline: 5px solid red; cursor:pointer;" class="my neplacen">';
-                                    }
-                                    else{
-                                        echo '<tr class="my">';
-                                    }
-                                    echo   '<td>'.$red['vrijemeIzdavanja'].'</td>
-                                            <td>'.$red['placen'].'</td>
-                                            <td>'.$red['iznos'].' kn</td>
-                                            <td>'.$red['puniIznos'].' kn</td>
-                                            <td style="text-align:center;"><img src="'.$red['slika'].'"  height=50/></td>
-                                            <td style="display:none;">'.$red['racun_id'].'</td>
-                                        </tr>';   
+                <?php
+                    if($_SESSION['uloga']  >= 1){
+                        echo '<table id="my">
+                        <thead>
+                            <th>Vrijeme izdavanja</th>
+                            <th>Plaćen</th>
+                            <th>Iznos pošiljke</th>
+                            <th>Puni iznos</th>
+                            <th>Slika</th>
+                        </thead>
+                        <tbody>';
+                        while($red = mysqli_fetch_assoc($rezultat)){
+                            if($red['placen'] == 0){        
+                                echo '<tr style="outline: 3px solid red; cursor:pointer;" class="neplacen">';
+                            }
+                            else{
+                                echo '<tr>';
+                            }
+                            echo   '<td>'.$red['vrijemeIzdavanja'].'</td>
+                                    <td>'.$red['placen'].'</td>
+                                    <td>'.$red['iznos'].' kn</td>
+                                    <td>'.$red['puniIznos'].' kn</td>
+                                    <td style="text-align:center;"><img src="'.$red['slika'].'"  height=50/></td>
+                                    <td style="display:none;">'.$red['racun_id'].'</td>
+                                </tr>';   
+                        }
+                        echo '
+                        </tbody>
+                    </table>';
+                    }
+                ?>
+                <?php 
+                    if($_SESSION['uloga']  >= 2){
+                        echo '
+                        <table id="izdani" style="display: none;">
+                        <thead>
+                            <th>Vrijeme izdavanja</th>
+                            <th>Plaćen</th>
+                            <th>Iznos pošiljke</th>
+                            <th>Puni iznos</th>
+                            <th>Slika</th>
+                        </thead>
+                        <tbody>';
+                        while($red = mysqli_fetch_assoc($rezultat2)){
+                                if($red['placen'] == 0){        
+                                    echo '<tr style="outline: 3px solid red; cursor:pointer;" class="neplacenModerator">';
                                 }
-                            ?>
-                            <?php 
-                                if($rezultat2 != null){
-                                while($red = mysqli_fetch_assoc($rezultat2)){
-                                        if($red['placen'] == 0){        
-                                            echo '<tr style="outline: 5px solid red; display: none; cursor:pointer;" class="all neplacenModerator">';
-                                        }
-                                        else{
-                                            echo '<tr class="all" style="display: none;">';
-                                        }
-                                        echo   '<td>'.$red['vrijemeIzdavanja'].'</td>
-                                                <td>'.$red['placen'].'</td>
-                                                <td>'.$red['iznos'].' kn</td>
-                                                <td>'.$red['puniIznos'].' kn</td>
-                                                <td style="text-align:center;"><img src="'.$red['slika'].'"  height=50/></td>
-                                                <td style="display:none;">'.$red['racun_id'].'</td>
-                                                <td style="display:none;">'.$red['rokZaPlacanje'].'</td>
-                                            </tr>';   
-                                    }
+                                else{
+                                    echo '<tr>';
                                 }
-                            ?>
-                    </tbody>
-                </table>
-                
-              
-            
+                                echo   '<td>'.$red['vrijemeIzdavanja'].'</td>
+                                    <td>'.$red['placen'].'</td>
+                                    <td>'.$red['iznos'].' kn</td>
+                                    <td>'.$red['puniIznos'].' kn</td>
+                                    <td style="text-align:center;"><img src="'.$red['slika'].'"  height=50/></td>
+                                    <td style="display:none;">'.$red['racun_id'].'</td>
+                                    <td style="display:none;">'.$red['rokZaPlacanje'].'</td>
+                                </tr>';   
+                            }
+                            echo '
+                            </tbody>
+                        </table>';
+                    }
+                ?>
+                <?php 
+                    if($_SESSION['uloga']  >=2){
+                    echo '
+                        <div id="zahtjevi"  style="display: none;">
+                            <table>
+                            <thead>
+                                <th>Vrijeme izdavanja</th>
+                                <th>Iznos pošiljke</th>
+                                <th>Iznos obrade</th>
+                            </thead>
+                            <tbody id="zahtjeviZaRacune">';
+                            if($rezultat3->num_rows == 0){
+                                echo '<tr><td colspan=3>Trenutno nemate zahtjeva</tr>';
+                            }
+                            while($red = mysqli_fetch_assoc($rezultat3)){
+                                echo '<tr">
+                                    <td>'.$red['vrijemeIzdavanja'].'</td>
+                                    <td>'.$red['iznos'].' kn</td>
+                                    <td> <input type="textbox" class="tableInput" id="obrada" style="background: transparent;"></td>
+                                    <td style="display:none;" id="racun_id">'.$red['racun_id'].'</td>
+                                </tr>';   
+                                }
+                                echo '
+                                </tbody>
+                            </table>';
+                            if($rezultat3->num_rows > 0){
+                                echo '<div class="buttonWrapper">
+                                <input id="azurirajRacuneBtn" type = "submit" value = "Ažuriraj račune" class="button add"><br>
+                            </div>';
+                            }
+                            echo'
+                    </div>';
+                    }
+                ?>
         </main>  
         <footer class="footer">
             <span class="footerText">2020, Vuk Ilija</span>+

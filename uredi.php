@@ -2,6 +2,7 @@
     require("baza.class.php"); 
     $baza = new Baza;
     $baza -> spojiDB();
+    session_start();
 
     $upit = "SELECT drzava_id, naziv FROM drzava;";
     $rezultat1 = $baza -> SelectDB($upit);
@@ -12,6 +13,7 @@
 
     $upit = "SELECT korisnik_id, ime, prezime, korisnicko_ime FROM korisnik WHERE id_uloga='2';";
     $rezultat3 = $baza -> SelectDB($upit);    
+
     $baza -> zatvoriDB();
 ?>
 
@@ -92,64 +94,74 @@
                         <?php
                             while($red = mysqli_fetch_assoc($rezultat2)){
                                 echo '
-                                    <tr> 
+                                    <tr class="postanskiUred" style="cursor:pointer;"> 
                                         <td>'.$red['naziv'].'</td>
                                         <td>'.$red['adresa'].'</td>
                                         <td>'.$red['postanskiBroj'].'</td>
                                         <td style="display:none">'.$red['id_drzave'].'</td>
                                         <td>'.$red['broj_poslanih'].'</td>
                                         <td>'.$red['broj_primljenih'].'</td>
+                                        <td style="display:none;">'.$red['postanskiUred_id'].'</td>
                                     </tr>
                                 ';   
                             }
-                         
                         ?>
                         
-                         <!-- SAMO ZA ADMINE -->
-                         <tr>
-                            <td><input type="textbox" class="tableInput" id="naziv"></td>
-                            <td><input type="textbox" class="tableInput" id="adresa"></td>
-                            <td>
-                                <input type="textbox" class="tableInput" id="poštanskiBroj">
-                            </td>
-                            <td>  <select class="select-css" id="select" style="height: 29px; ">
-                                    <?php
-                                        $rezultat1->data_seek(0);
-                                        while($red = mysqli_fetch_assoc($rezultat1)){
+                         <?php 
+                         if($_SESSION['uloga']  == 3){
+                             echo '
+                            <tr id="elementZaDodavanje">
+                                <td><input type="textbox" class="tableInput" id="naziv"></td>
+                                <td><input type="textbox" class="tableInput" id="adresa"></td>
+                                <td>
+                                    <input type="textbox" class="tableInput" id="poštanskiBroj">
+                                </td>
+                                <td>  <select class="select-css" id="select" style="height: 29px; width: 100%;">';
+                                            $rezultat1->data_seek(0);
+                                            while($red = mysqli_fetch_assoc($rezultat1)){
+                                                echo '
+                                                    <option value = '.$red["drzava_id"].'> 
+                                                        '.$red["naziv"].'
+                                                    </option>
+                                                ';
+                                            }
+                                        
+                                echo '
+                                    </select> 
+                                </td>
+                                <td>
+                                    <select class="tableInput" id="moderator">';
+
+                                        while($red = mysqli_fetch_assoc($rezultat3)){
                                             echo '
-                                                <option value = '.$red["drzava_id"].'> 
-                                                    '.$red["naziv"].'
-                                                </option>
-                                            ';
+                                                <option value = '.$red["korisnik_id"].'> 
+                                                    '.$red["ime"].' '.$red["prezime"].'('.$red["korisnicko_ime"].')
+                                                </option>';
                                         }
-                                    ?>
-                                </select> 
-                            </td>
-                            <td>
-                                <select class="tableInput" id="moderator">
-                                <?php
-                                    while($red = mysqli_fetch_assoc($rezultat3)){
-                                        echo '
-                                            <option value = '.$red["korisnik_id"].'> 
-                                                '.$red["ime"].' '.$red["prezime"].'('.$red["korisnicko_ime"].')
-                                            </option>
-                                        ';
-                                    }
-                                ?>
-                            </td>
-                        </tr>
-                        <!--                -->
+                                echo '</td></tr>';
+                            }
+                        ?>
                     </tbody>
                 </table>
-                    <div class="buttonWrapper">
+                <?php
+                    if($_SESSION['uloga']  == 3){
+                    echo '<div class="buttonWrapper">
                         <input id="submitBtn" type = "submit" value = "Submit" class="submit" style="margin-top: 15px;"><br>
-                    </div>
+                    </div>';}
+                ?>
             </div>
         </main>  
 
         <footer class="footer">
             <span class="footerText">2020, Vuk Ilija</span>+
         </footer>  
+        </div>
+        <div id="overlay">
+        </div>
+        <div class="modal" style="display:none; width: 90%; left: 5%;">
+            <div class="gallery" id="gallery">
+               
+            </div>
         </div>
     </body>
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>

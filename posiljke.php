@@ -3,28 +3,33 @@
     $baza = new Baza;
     $baza -> spojiDB();
 
+    session_unset();
     session_start();
-    $_SESSION['uloga'] = 3;
-    $_SESSION['kor_id'] = 1;
-    $_SESSION['blokiran'] = 1;
-    $uloga = 3;
-    $kor_id = 1;
-
-    if($uloga != null && $uloga >= 1){
+    echo($_SESSION['uloga']);
+    echo($_SESSION['kor_id']);
+    
+    if($_SESSION['uloga']  >= 1){
         $upit = "SELECT korisnik_id, CONCAT(ime,' ',prezime,'(',korisnicko_ime,')') AS ime FROM korisnik;";
         $rezultat1 = $baza -> SelectDB($upit);
-        $upit = "SELECT id_primatelja, spremnaZaIsporuku, cijenaPoKg, masa, t2.ime_primatelja, t3.naziv AS trenutni_ured, t1.id_trenutniUred, t1.id_konacniUred FROM posiljka AS t1 LEFT JOIN ( SELECT korisnik_id, CONCAT(ime,' ', prezime,'(',korisnicko_ime,')') AS ime_primatelja FROM korisnik ) AS t2 ON t1.id_primatelja = t2.korisnik_id LEFT JOIN postanskiured AS t3 ON t1.id_trenutniUred=t3.postanskiUred_id WHERE t1.id_posiljatelja =".$kor_id."";
+        $upit = "SELECT id_primatelja, spremnaZaIsporuku, cijenaPoKg, masa, t2.ime_primatelja, t3.naziv AS trenutni_ured, t1.id_trenutniUred, t1.id_konacniUred FROM posiljka AS t1 LEFT JOIN ( SELECT korisnik_id, CONCAT(ime,' ', prezime,'(',korisnicko_ime,')') AS ime_primatelja FROM korisnik ) AS t2 ON t1.id_primatelja = t2.korisnik_id LEFT JOIN postanskiured AS t3 ON t1.id_trenutniUred=t3.postanskiUred_id WHERE t1.id_posiljatelja =".$_SESSION['kor_id']."";
         $rezultat2 = $baza -> SelectDB($upit);
-        $upit = "SELECT posiljka_id, spremnaZaIsporuku, cijenaPoKg, masa, t2.ime_posiljatelja, t3.naziv AS trenutni_ured, t4.racun_id FROM posiljka AS t1 LEFT JOIN ( SELECT korisnik_id, CONCAT(ime,' ', prezime,'(',korisnicko_ime,')') AS ime_posiljatelja FROM korisnik ) AS t2 ON t1.id_posiljatelja = t2.korisnik_id LEFT JOIN postanskiured AS t3 ON t1.id_trenutniUred=t3.postanskiUred_id LEFT JOIN racun AS t4 ON t1.posiljka_id=t4.id_posiljka WHERE t1.id_primatelja='".$kor_id."'";
+        $upit = "SELECT posiljka_id, spremnaZaIsporuku, cijenaPoKg, masa, t2.ime_posiljatelja, t3.naziv AS trenutni_ured, t4.racun_id FROM posiljka AS t1 LEFT JOIN ( SELECT korisnik_id, CONCAT(ime,' ', prezime,'(',korisnicko_ime,')') AS ime_posiljatelja FROM korisnik ) AS t2 ON t1.id_posiljatelja = t2.korisnik_id LEFT JOIN postanskiured AS t3 ON t1.id_trenutniUred=t3.postanskiUred_id LEFT JOIN racun AS t4 ON t1.posiljka_id=t4.id_posiljka WHERE t1.id_primatelja='".$_SESSION['kor_id']."'";
         $rezultat3 = $baza -> SelectDB($upit);
 
-        if($uloga >= 2){
-            $upit = "SELECT t1.naziv, COUNT(t3.posiljka_id) as broj_posiljki, SUM(case t4.placen when '1' then 1 else 0 end) AS broj_placenih FROM drzava AS t1 LEFT JOIN postanskiured AS t2 ON t1.drzava_id=t2.id_drzave LEFT JOIN posiljka AS t3 ON t2.postanskiUred_id=t3.id_pocetniUred LEFT JOIN racun AS t4 ON t3.posiljka_id=t4.id_posiljka GROUP BY t1.naziv";
+        if($_SESSION['uloga']  >= 2){
+            $upit = "SELECT t1.naziv, COUNT(t3.posiljka_id) as broj_posiljki, SUM(case t4.placen when '1' then 1 else 0 end) AS broj_placenih FROM drzava AS t1 LEFT JOIN postanskiured AS t2 ON t1.drzava_id=t2.id_drzave LEFT JOIN posiljka AS t3 ON t2.postanskiUred_id=t3.id_pocetniUred LEFT JOIN racun AS t4 ON t3.posiljka_id=t4.id_posiljka WHERE t2.id_moderatora=".$_SESSION['kor_id']." GROUP BY t1.naziv";
             $rezultat4 = $baza -> SelectDB($upit);
+            $upit = "SELECT posiljka_id, t2.naziv AS trenutni_ured, t3.naziv AS konacni_ured FROM posiljka AS t1 LEFT JOIN postanskiUred AS t2 ON t1.id_trenutniUred=t2.postanskiUred_id LEFT JOIN postanskiured AS t3 ON t1.id_konacniUred=t3.postanskiUred_id WHERE t2.id_moderatora = '".$_SESSION['kor_id']."' AND spremnaZaIsporuku='0';";
+            $rezultat7 = $baza -> SelectDB($upit);
+        }
+
+        if($_SESSION['uloga']  == 3){
+            $upit = "SELECT * FROM postanskiUred;";
+            $rezultat5 = $baza -> SelectDB($upit);
+            $upit = "SELECT posiljka_id, ime_posiljatelja, ime_primatelja, id_pocetniUred, id_konacniUred, id_trenutniUred, masa FROM `posiljka` AS t1 LEFT JOIN (SELECT korisnik_id, CONCAT(ime,' ',prezime,'(',korisnicko_ime,')') AS ime_posiljatelja FROM korisnik) AS t2 ON t1.id_posiljatelja=t2.korisnik_id LEFT JOIN (SELECT korisnik_id, CONCAT(ime,' ',prezime,'(',korisnicko_ime,')') AS ime_primatelja FROM korisnik) AS t3 ON t1.id_primatelja=t3.korisnik_id WHERE cijenaPoKg IS NULL";
+            $rezultat6 = $baza -> SelectDB($upit);
         }
     }
-    
-
     $baza -> zatvoriDB();
 ?>
 <!DOCTYPE html>
@@ -71,20 +76,20 @@
                 <h1 class="heading">Pošiljke</h1>
                 <h2 id="greska" style="color:red;"><?php echo isset($_SESSION['blokiran']) ? "Trenutno ste blokirani, pokušajte kasnije" : null ?></h2>
                 <?php
-                    if($uloga == null || $uloga == 0){
+                    if($_SESSION['uloga']  == 0){
                         echo '<a class="linkWithUnderline" href="login.html">Prijavite se kako bi vidjeli sadržaj</a>';
                     }
                 ?>
                 <?php
-                    if($uloga != null && $uloga >= 1){
+                    if($_SESSION['uloga']  >= 1){
                         echo '
-                        <div class="switchShowingWrapper posiljkeSwitch">
+                        <div class="switchShowingWrapper">
                         <div id="showingLeft" class="switchShowing activeShow">Nova pošiljka</div>
                             <div id="showingMiddle1" class="switchShowing">Šaljem/Primam</div>';
-                            if($uloga >= 2){
+                            if($_SESSION['uloga']  >= 2){
                             echo '
                             <div id="showingMiddle2" class="switchShowing">Statistika</div>';
-                                if($uloga == 3){
+                                if($_SESSION['uloga']  == 3){
                                     echo '<div id="showingRight" class="switchShowing">Zahtjevi</div>';
                                 }
                             }
@@ -93,7 +98,7 @@
                 ?>
                
                 <?php 
-                    if($uloga != null && $uloga >= 1){
+                    if($_SESSION['uloga']  >= 1){
                         //nova pošiljka
                         echo '<div id="novaPosiljkaWrapper">
                               <div class = "textbox">
@@ -124,7 +129,7 @@
                                 </div>';
                                 if(!isset($_SESSION["blokiran"])){ 
                                     echo '<div class="buttonWrapper">
-                                    <input id="posaljiPosiljkuBtn" type = "submit" value = "Pošalji pošiljku" class="submit"><br>
+                                    <input id="posaljiPosiljkuBtn" type = "submit" value = "Pošalji pošiljku" class="button add"><br>
                                     </div>';
                                 
                                 }
@@ -145,8 +150,10 @@
                                     <th>Masa</th>
                                     <th>Spremna za isporuku</th>
                                 </thead>
-                            <body>';
-
+                            <tbody>';
+                            if($rezultat2->num_rows == 0){
+                                echo '<tr><td colspan=6>Nemate poslanih pošiljki</tr>';
+                            }
                             while($red = mysqli_fetch_assoc($rezultat2)){
                                 $stigla = ($red['id_trenutniUred'] == $red['id_konacniUred']) ? 'Da' : 'Ne';
                                 echo  ' <tr>
@@ -174,8 +181,11 @@
                                     <th>Masa</th>
                                     <th>Spremna za isporuku</th>
                                 </thead>
-                            <body>';
+                            <tbody>';
 
+                            if($rezultat3->num_rows == 0){
+                                echo '<tr><td colspan=5>Ne primate pošiljke</tr>';
+                            }
                             while($red = mysqli_fetch_assoc($rezultat3)){
                                 if($red['spremnaZaIsporuku'] == 1 && $red['racun_id'] == null){
                                     echo  ' <tr style="outline: 5px solid green; cursor: pointer;" class="spremanZaIsporuku">';
@@ -194,12 +204,43 @@
                             }
 
                             echo '</tbody>
-                            </table>
-                        </div>';
+                            </table>';
+
+                        if($_SESSION['uloga']  >= 2){
+                                
+
+                        //primam(moderator)
+                        echo '
+                        <h2 style="margin-top: 15px;">Primljene pošiljke(Moderator)</h2>
+                        <hr>
+                        <table>
+                            <thead>
+                                <th>Trenutni ured</th>
+                                <th>Konačni ured</th>
+                                <th>Stigao na odredište</th>
+                            </thead>
+                        <tbody id="primamModerator">';
+
+                        while($red = mysqli_fetch_assoc($rezultat7)){
+                            $stigaoNaOdrediste = ($red['trenutni_ured'] == $red['konacni_ured']) ? 'Da' : 'Ne' ;
+                            echo  '<tr class="'.$stigaoNaOdrediste.'">
+                            <td style="display: none;"> '.$red['posiljka_id'].'</td>
+                            <td>'.$red['trenutni_ured'].'</td>
+                            <td>'.$red['konacni_ured'].'</td>
+                            <td>'.$stigaoNaOdrediste.'</td>
+                        </tr>';
+                        }
+
+                        echo '</tbody>
+                        </table>';
+                           
+                        }
+
+                        echo '</div>';
                     }
                 ?>
                 <?php
-                    if($uloga != null && $uloga >= 2){
+                    if($_SESSION['uloga']  >= 2){
                         echo '<div id="statistikaWrapper" style="display:none;">
                         <div class="switchShowingWrapper posiljkeSwitch"  style="border:none;">
                        
@@ -227,7 +268,9 @@
                                 <th>Broj plaćenih pošiljki</th>
                             </thead>
                         <tbody id="statistikaTbody">';
-
+                        if($rezultat4->num_rows == 0){
+                            echo '<tr><td colspan=3>Za odabrano razdoblje u njegovim poštanskim uredima nije bilo pošiljki</tr>';
+                        }
                         while($red = mysqli_fetch_assoc($rezultat4)){
                             $broj_posiljki = $red['broj_posiljki'] ==  '' ? 0 : $red['broj_posiljki'];
                             echo  ' <tr>
@@ -242,6 +285,70 @@
                         </div>';
                     }
                 ?>
+                <?php
+                    if($_SESSION['uloga']  >= 3){
+                        echo '<div id="zahtjeviZaPosiljkamaWrapper" style="display:none;"><h2>Zahtjevi za pošiljkama</h2>
+                        <hr>
+                        <table>
+                        <thead>
+                            <th>Ime pošiljatelja</th>
+                            <th>Ime primatelja</th>
+                            <th>Masa</th>
+                            <th>Cijena po Kg</th>
+                            <th>Početni ured</th>
+                            <th>Konačni ured</th>
+                        </thead>
+                    <tbody id="prihvacanjeZahtjeva">';
+                    if($rezultat6->num_rows == 0){
+                        echo '<tr><td colspan=6>Trenutno nemate zahtjeva</tr>';
+                    }
+                    while($red = mysqli_fetch_assoc($rezultat6)){
+                        echo  ' <tr>
+                        <td style="display:none;">'.$red['posiljka_id'].'</td>
+                        <td>'.$red['ime_posiljatelja'].'</td>
+                        <td>'.$red['ime_primatelja'].'</td>
+                        <td>'.$red['masa'].'</td>
+                        <td><input type="textbox" class="tableInput" id="cijenaPoKg" style="background: transparent;"></td>    
+                        <td>
+                            <select class="select-css" id="select" style="height: 29px; width:100%; background: transparent;">
+                            <option value="-1" selected></option>
+                            ';
+                            $rezultat5->data_seek(0);
+                            while($red = mysqli_fetch_assoc($rezultat5)){
+                                echo '
+                                    <option value = '.$red['postanskiUred_id'].'> 
+                                        '.$red["naziv"].'
+                                    </option>
+                                ';
+                            }
+                            echo '
+                            </select> 
+                        </td>
+
+                        <td>
+                            <select class="select-css" id="select" style="height: 29px; width:100%; background: transparent;">
+                                <option value="-1" selected></option>';
+                                $rezultat5->data_seek(0);
+                                while($red = mysqli_fetch_assoc($rezultat5)){
+                                    echo '
+                                        <option value = '.$red['postanskiUred_id'].'> 
+                                            '.$red["naziv"].'
+                                        </option>
+                                    ';
+                                }
+                                echo '
+                            </select> 
+                        </td>                        
+                    </tr>';
+                    }
+
+                    echo '</tbody>
+                    </table>
+                    <div class="buttonWrapper">
+                        <input id="azurirajPosiljkeBtn" type = "submit" value = "Ažuriraj pošiljke" class="button add"><br>
+                    </div></div>';
+                    }
+                ?>
             </div>
         </main>  
 
@@ -252,25 +359,58 @@
         </div>
 
         <div class="modal" style="top: 50%; transform: translateY(-50%);"> 
-            <div class = "textbox" style="display:none;">
-                <label for="id_posiljka">ID Pošiljke</label>
-                <input type = "text" name = "id_posiljka" id="id_posiljka" class="text" disabled><br>
+            <div id="zatraziRacunWrapper" style="display: none;">
+                <div class = "textbox" style="display:none;">
+                    <label for="id_posiljka">ID Pošiljke</label>
+                    <input type = "text" name = "id_posiljka" id="id_posiljka" class="text" disabled><br>
+                </div>
+                <div class = "textbox">
+                    <label for="ime_posiljatelja">Ime pošiljatelja</label>
+                    <input type = "text" name = "ime_posiljatelja" id="ime_posiljatelja" class="text" disabled><br>
+                </div>
+                <div class = "textbox">
+                    <label for="cijenaPoKgModal">Cijena po kg</label>
+                    <input type = "text" name = "cijenaPoKgModal" id="cijenaPoKgModal" class="text"  disabled><br>
+                </div>
+                <div class = "textbox">
+                    <label for="masaModal">Masa</label>
+                    <input type = "text" name = "masaModal" id="masaModal" class="text" disabled><br>
+                </div>
+                <div class="buttonWrapper" style="width: 100%;">
+                    <input id="zatražiRačunBtn" type = "submit" value = "Zatraži račun" class="button add" style="margin: 0 auto; width: 150px;"><br>
+                </div>
             </div>
-            <div class = "textbox">
-                <label for="ime_posiljatelja">Ime pošiljatelja</label>
-                <input type = "text" name = "ime_posiljatelja" id="ime_posiljatelja" class="text" disabled><br>
-            </div>
-            <div class = "textbox">
-                <label for="cijenaPoKg">Cijena po kg</label>
-                <input type = "text" name = "cijenaPoKg" id="cijenaPoKg" class="text"  disabled><br>
-            </div>
-            <div class = "textbox">
-                <label for="masa">Masa</label>
-                <input type = "text" name = "masa" id="masa" class="text" disabled><br>
-            </div>
-            <div class="buttonWrapper" style="width: 100%;">
-                <input id="zatražiRačunBtn" type = "submit" value = "Zatraži račun" class="button add" style="margin: 0 auto; width: 150px;"><br>
-            </div>
+            <?php
+            if($uloga >= 2){
+            echo '<div id="proslijediPosiljkuWrapper">
+                <div class = "textbox">
+                    <label for="posiljka_id">ID Pošiljke</label>
+                    <input type = "text" name = "posiljka_id" id="posiljka_id" class="text" disabled><br>
+                </div>
+                <div class = "textbox">
+                    <label for="konacni_ured">Konačni ured</label>
+                    <input type = "text" name = "konacni_ured" id="konacni_ured" class="text" disabled><br>
+                </div>
+                <div class = "textbox" id="sljedeci_ured_txtBox">
+                    <label for="sljedeci_ured">Sljedeći ured</label>
+                    <select class="select-css" id="sljedeci_ured" style="width:100%;">
+                        <option value="-1" selected></option>';
+                        $rezultat5->data_seek(0);
+                        while($red = mysqli_fetch_assoc($rezultat5)){
+                            echo '
+                                <option value = '.$red['postanskiUred_id'].'> 
+                                    '.$red["naziv"].'
+                                </option>
+                            ';
+                        }
+                        echo '</select> 
+                </div>
+                <div class="buttonWrapper" style="width: 100%;">
+                    <input id="proslijediPosiljkuBtn" type = "submit" value = "Proslijedi pošiljku" class="button add" style="margin: 0 auto; width: 150px;"><br>
+                </div>
+            </div>';
+            }
+            ?>
         </div>
     </div>
     </body>

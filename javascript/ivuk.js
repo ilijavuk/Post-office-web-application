@@ -20,7 +20,6 @@ $(()=>{
     });
 
     if(window.location.href.includes("login")){
-        console.log("login");
         $("#forgottenUsername").click(function(){
             forgottenPassword($(this));
         })
@@ -29,16 +28,119 @@ $(()=>{
             if(loggingInWithUsername){
                 loggingInWithUsername = false;
                 $(objekt).html("Zaboravili ste e-mail? Prijavite se pomoću korisničkog imena")
-                $("#kor_imeTextBox").hide();
-                $("#e_mailTextBox").show();
+                $("#korisnicko_imeTextBox").hide();
+                $("#emailTextBox").show();
             }
             else{
                 loggingInWithUsername = true;
                 $(objekt).html("Zaboravili ste korisničko ime? Prijavite se pomoću e-maila")
-                $("#kor_imeTextBox").show();
-                $("#e_mailTextBox").hide();
+                $("#korisnicko_imeTextBox").show();
+                $("#emailTextBox").hide();
             }
         }
+
+        $('#submitBtn').click(()=>{
+            $("#greska").html('');
+            let provjeraProsla = true;
+            
+            if($("#lozinka").val() == ''){
+                $("#lozinka").css('outline', 'solid 1px red');
+            }
+
+            switch(loggingInWithUsername){
+                case true: 
+                    if($("#korisnicko_ime").val() == ''){
+                        $("#korisnicko_ime").css('outline', 'solid 1px red');
+                    }
+                    else if($("#korisnicko_ime").val() != ''){
+                        $.ajax({
+                            method: 'POST',
+                            url: "api.php?login",
+                            data:{korisnicko_ime: $("#korisnicko_ime").val(), lozinka: $("#lozinka").val() }
+                        }).done(function(data) {
+                            prikaziOdgovor(data);
+                        });
+                    }
+                ;break;
+                case false: 
+                    if($("#email").val() == ''){
+                        $("#email").css('outline', 'solid 1px red');
+                    }
+                    else if($("#email").val() != ''){
+                        $.ajax({
+                            method: 'POST',
+                            url: "api.php?login",
+                            data:{email: $("#email").val(), lozinka: $("#lozinka").val() }
+                        }).done(function(data) {
+                            prikaziOdgovor(data);
+                        });
+                    }
+                ;break;
+            }
+            
+        })
+
+        function prikaziOdgovor(odgovor){
+            switch(odgovor){
+                case "1": location.href='index.html';break;
+                case "0": $("#greska").html('Prijava nije uspjela');break;
+                case "Zaključani ste!":  $("#greska").html('Zaključani ste!');break;
+            }
+        }
+    }
+
+    if(window.location.href.includes("register")){
+        $(".textbox").each(function(){
+            if($($(this).children()[1]).val() == ''){
+                $($(this).children()[1]).on('input',function(){$(this).css('outline','none');})
+                $("#greska").html('');
+            }
+        })
+
+        $("#submitBtn").click(()=>{
+            $("#greska").html('');
+            let provjeraProsla = true;
+            $(".textbox").each(function(){
+                if($($(this).children()[1]).val() == ''){
+                    $($(this).children()[1]).css('outline','solid 1px red');
+                    provjeraProsla = false;
+                }
+            })
+
+            if($("#lozinka").val() != $("#potvrda_lozinke").val()){
+                $("#potvrda_lozinke").css('outline', 'solid 1px red');
+                $("#greska").html('Lozinke se ne podudaraju');
+                provjeraProsla = false;
+            }
+
+            if($("#korisnicko_ime").val().length < 3){
+                $("#greska").html('Korisničko ime je prekratko (min 3 znamenke)');
+                provjeraProslaProsla = false;
+            }
+            
+            $.ajax({
+                method: 'POST',
+                url: "api.php?fetch_korisnickoIme",
+                data:{korisnicko_ime: $("#korisnicko_ime").val()}
+            }).done(function(data) {
+                if(data != '0'){
+                    provjeraProsla = false;
+                    $("#greska").html('To korisničko ime je već zauzeto');
+                }
+            });
+
+            if(provjeraProsla){
+                $.ajax({
+                    method: 'POST',
+                    url: "api.php?insert_korisnik",
+                    data:{ime: $("#ime").val(), prezime: $("#prezime").val(), korisnicko_ime: $("#korisnicko_ime").val(), email: $("#email").val(), lozinka: $("#lozinka").val() }
+                }).done(function(data) {
+                    if(data=="uspjeh"){
+                        window.location.href="login.html";
+                    }
+                });
+            }
+        })
     }
 
     if(window.location.href.includes("uredi")){
@@ -54,13 +156,12 @@ $(()=>{
 
         $("#search").on('input', ()=>{
             var zadnji = document.getElementsByTagName("tbody")[0].lastElementChild;
-            
-            $array = search($("#search").val());
+            $array = search($("#search").val(), poljeSPodatcima);
+            $("tbody").append($array)
 
-            $array.each(function(index){
-                $("tbody").append($(this)[0])
-            });
-            $("tbody").append(zadnji);
+            if(zadnji != null && zadnji.id == 'elementZaDodavanje'){
+                $("tbody").append(zadnji);
+            }
                 
         });
 
@@ -84,7 +185,10 @@ $(()=>{
             $array.each(function(index){
                 $("tbody").append($(this)[0])
             });
-            $("tbody").append(zadnji);
+            
+            if(zadnji != null && zadnji.id == 'elementZaDodavanje'){
+                $("tbody").append(zadnji);
+            }
         })
 
         $("#broj_primljenih").click(()=>{
@@ -107,15 +211,42 @@ $(()=>{
             $array.each(function(index){
                 $("tbody").append($(this)[0])
             });
-            $("tbody").append(zadnji);
+            if(zadnji != null && zadnji.id == 'elementZaDodavanje'){
+                $("tbody").append(zadnji);
+            }
+        })
+
+        $(".postanskiUred").click(function(){
+            $('.modal').show();
+            $('#overlay').show();
+            $.ajax({
+                method: "POST",
+                url: "api.php?fetch_galerija",
+                data: {postanskiUred_id: $(this).children()[6].innerHTML },
+            }).done(function(data) {
+                polje=(data.split(' '));
+                polje.forEach(element => {
+                    if(element != ''){
+                        let e = `<figure class="galleryFigure"><img src=${element} style="width:100%;"/></figure>`;
+                        console.log(e);
+                        $("#gallery").append(e);
+                    }}
+                ); 
+            });
+        })
+
+        $("#overlay").click(()=>{
+            $('.modal').hide();
+            $('#overlay').hide();
+            $($("#gallery").children()).each(function(){
+                $(this).remove()
+            });
         })
 
         function sortArray(sort, sorting){
             let length =  $("tbody").children(":not(:last-child)").length-1;
             $array =  $("tbody").children(":not(:last-child)");
             $("tbody").empty();
-            $("#broj_poslanih").html("Broj poslanih");
-            $("#broj_primljenih").html("Broj primljenih");
 
             for(var i = 0; i < length; length--){
                 var ekstrem = $array[i].children[sorting].innerHTML;
@@ -157,25 +288,24 @@ $(()=>{
             });
 
             if($count == 0){
-                $("tbody").append("<tr height=30 style='font-size: 28px;'><td colspan=5>Poštanski uredi za trenutno odabranu državu trenutno ne postoje.</td></tr>")
+                $("tbody").append("<tr height=30 style='font-size: 28px;'><td colspan=5>Poštanski uredi za odabranu državu trenutno ne postoje.</td></tr>")
             }
-            $("tbody").append(zadnji);
+            if(zadnji != null && zadnji.id == 'elementZaDodavanje'){
+                $("tbody").append(zadnji);
+            }
         });
 
-        function search(val){
-            let length =  $("tbody").children(":not(:last-child)").length;
-            $array =  $("tbody").children(":not(:last-child)");
+        function search(val, array){
+            $array = $(array).children();
+            let length = $array.length; 
+            let copy = [];
             $("tbody").empty();
             for(var i = 0; i < length; i++){
-                if($array[i].children[0].innerHTML.includes(val) == false && $array[i].children[1].innerHTML.includes(val) == false && $array[i].children[2].innerHTML.includes(val) == false){
-                    console.log("izbacujem:", $array[i]);
-                    $($array[i]).css('display','none');
-                }
-                else{
-                    $($array[i]).css('display','table-row');
+                if($array[i].children[0].innerHTML.includes(val) == true || $array[i].children[1].innerHTML.includes(val) == true || $array[i].children[2].innerHTML.includes(val) == true){
+                    copy.push($array[i]);
                 }
             }
-            return $array;
+            return copy;
         }
     }
     
@@ -202,24 +332,33 @@ $(()=>{
     }
 
     if(window.location.href.includes("racuni")){
-        let showing = 0; //0 - left, 1 - right
         $("#showingLeft").click(()=>{switchShowing(0)});
-        $("#showingRight").click(()=>{switchShowing(1)});
+        $("#showingMiddle").click(()=>{switchShowing(1)});
+        $("#showingRight").click(()=>{switchShowing(2)});
+
+        function removeActiveClass(){
+            $("#greska").html('');
+            $("#showingLeft").removeClass('activeShow');
+            $("#showingMiddle").removeClass('activeShow');
+            $("#showingRight").removeClass('activeShow');
+            $("#my").hide();
+            $("#izdani").hide();
+            $("#zahtjevi").hide();
+        }
 
         function switchShowing(switchTo){
+            removeActiveClass();
             if(switchTo == 0){
                 $("#showingLeft").addClass('activeShow');
-                $("#showingRight").removeClass('activeShow');
-                $(".my").each(function(){$(this).css('display', 'table-row')});
-                $(".all").each(function(){$(this).css('display', 'none')});
-                showing = 0;
+                $("#my").show();
             }
             else if(switchTo == 1){
-                $("#showingLeft").removeClass('activeShow');
+                $("#showingMiddle").addClass('activeShow');
+                $("#izdani").show();
+            }
+            else if(switchTo == 2){
                 $("#showingRight").addClass('activeShow');
-                $(".my").each(function(){$(this).css('display', 'none ')});
-                $(".all").each(function(){$(this).css('display', 'table-row')});
-                showing = 1;
+                $("#zahtjevi").show();
             }
         }
 
@@ -340,10 +479,41 @@ $(()=>{
                 return dani + " Dana"
             }
         }
+
+        $("#azurirajRacuneBtn").click(()=>{
+            $("#zahtjeviZaRacune").children().each(function(){
+                if($($(this).children()[2]).children()[0].value == "" ){
+                    $(this).css('outline','3px solid red');
+                }
+                else{
+                    $(this).css('outline','3px solid green');
+                    $iznos_obrade = $("#obrada").val();
+                    $racun_id = $("#racun_id").html();
+                    console.log($iznos_obrade,$racun_id);
+
+                    let success = 0;
+                    $.ajax({
+                        method: "POST",
+                        url: "api.php?update_racunDodajIznos",
+                        data: {iznos_obrade: $iznos_obrade, racun_id:$racun_id },
+                    }).done(function(data) {
+                        console.log(data);
+                        if(data == "Uspjeh"){
+                            success = 1;
+                        }
+                    });
+
+                    if(success){
+                        $(this).remove();
+                    }
+                    
+                }
+            });
+        })
     }
 
     if(window.location.href.includes("posiljke")){
-        let showing = 0; //0 - left, 1 - right
+        console.log('posiljke');
         $("#showingLeft").click(()=>{switchShowing(0)});
         $("#showingMiddle1").click(()=>{switchShowing(1)});
         $("#showingMiddle2").click(()=>{switchShowing(2)});
@@ -365,32 +535,31 @@ $(()=>{
             $("#novaPosiljkaWrapper").hide();
             $("#saljemPrimamWrapper").hide();
             $("#statistikaWrapper").hide();
+            $("#zahtjeviZaPosiljkamaWrapper").hide();
         }
 
         function switchShowing(switchTo){
+            console.log('cl');
             if(switchTo == 0){
-                showing = 0;
                 removeActiveClass();
                 $("#showingLeft").addClass('activeShow');
                 $("#novaPosiljkaWrapper").show();
                 
             }
             else if(switchTo == 1){
-                showing = 1;
                 removeActiveClass();
                 $("#showingMiddle1").addClass('activeShow');
                 $("#saljemPrimamWrapper").show();
             }
             else if(switchTo == 2){
-                showing = 2;
                 removeActiveClass();
                 $("#showingMiddle2").addClass('activeShow');
                 $("#statistikaWrapper").show();
             }
             else if(switchTo == 3){
-                showing = 3;
                 removeActiveClass();
                 $("#showingRight").addClass('activeShow');
+                $("#zahtjeviZaPosiljkamaWrapper").show();
             }
         }
 
@@ -412,22 +581,25 @@ $(()=>{
         
         $(".spremanZaIsporuku").unbind().click(function(){
             $("#overlay").show();
-            $($(".modal")[0]).show();   
+            $($(".modal")[0]).show(); 
+            $("#zatraziRacunWrapper").show();  
 
             $id_posiljka = $(this).children()[5].innerHTML;
             $ime_posiljatelja = $(this).children()[0].innerHTML;
             $cijenaPoKg = $(this).children()[2].innerHTML;
             $masa = $(this).children()[3].innerHTML;
 
+            console.log($id_posiljka, $ime_posiljatelja, $cijenaPoKg, $masa);
+
             $("#id_posiljka").val($id_posiljka);
             $("#ime_posiljatelja").val($ime_posiljatelja);
-            $("#cijenaPoKg").val($cijenaPoKg);
-            $("#masa").val($masa);
+            $("#cijenaPoKgModal").val($cijenaPoKg);
+            $("#masaModal").val($masa);
         })
 
         $("#zatražiRačunBtn").click(function(){
-            $cijenaPoKg = $("#cijenaPoKg").val();
-            $masa =  $("#masa").val();
+            $cijenaPoKg = $("#cijenaPoKgModal").val();
+            $masa =  $("#masaModal").val();
             $iznos = $cijenaPoKg*$masa;
             $id_posiljka = $("#id_posiljka").val();
         
@@ -436,35 +608,119 @@ $(()=>{
                 url: "api.php?insert_racun",
                 data: {id_posiljka: $id_posiljka, iznos: $iznos},
             }).done(function(data) {
-                console.log(data);
+                closeModal();
             });    
         })
-    }
 
-    function filtrirajPoDatumu(){
-        console.log($("#od").val(),$("#do").val())
-        if($("#od").val() != '' && $("#do").val() != ''){
-            let poljeSPodatcima = '';
-            $.ajax({
-                url: "api.php?fetch_drzaveStatistika",
-                data: {od: $("#od").val(), do: $("#do").val() },
-            }).done(function(data) {
-                poljeSPodatcima = data;
-                console.log(data);
-            });
-
-            $("#statistikaTbody").empty();
-            
-            $array = $($(poljeSPodatcima)).children();
-            $count = 0;
-            $array.each(item => {               
-                $("tbody").append($array[item]);
-                $count++;
-            });
-
-            if($count == 0){
-                $("tbody").append("<tr height=30 style='font-size: 28px;'><td colspan=3>Podatci ne postoje.</td></tr>")
+        function filtrirajPoDatumu(){
+            if($("#od").val() != '' && $("#do").val() != ''){
+                let poljeSPodatcima = '';
+                $.ajax({
+                    method: "POST",
+                    url: "api.php?fetch_drzaveStatistika",
+                    data: {od: $("#od").val(), do: $("#do").val() },
+                }).done(function(data) {
+                    poljeSPodatcima = data;
+                    $("#statistikaTbody").empty();
+                           
+                    $("tbody").append(poljeSPodatcima);
+                     
+                    if(poljeSPodatcima.length == 0){
+                        $("tbody").append("<tr height=30 style='font-size: 28px;'><td colspan=3>Za odabrano razdoblje u njegovim poštanskim uredima nije bilo pošiljki</td></tr>")
+                    }
+                });
             }
         }
+
+        $("#azurirajPosiljkeBtn").click(()=>{
+            $("#prihvacanjeZahtjeva").children().each(function(){
+                if($($(this).children()[4]).children()[0].value == "" || $($(this).children()[5]).children()[0].value == "-1" || $($(this).children()[6]).children()[0].value == "-1" ){
+                    $(this).css('outline','3px solid red');
+                }
+                else{
+                    $(this).css('outline','3px solid green');
+                    $id_pocetniUred = $($(this).children()[5]).children()[0].value == "-1" || $($(this).children()[6]).children()[0].value; 
+                    $id_konacniUred = $($(this).children()[6]).children()[0].value == "-1" || $($(this).children()[6]).children()[0].value; 
+                    $cijenaPoKg = $($(this).children()[4]).children()[0].value;
+                    $posiljka_id = $(this).children()[0].innerHTML;
+                    
+                    let success = 0;
+                    $.ajax({
+                        method: "POST",
+                        url: "api.php?update_posiljkaAktiviraj",
+                        data: {id_pocetniUred: $id_pocetniUred, id_konacniUred:$id_konacniUred, cijenaPoKg:$cijenaPoKg, posiljka_id:$posiljka_id  },
+                    }).done(function(data) {
+                        if(data == "Uspjeh"){
+                            success = 1;
+                        }
+                    });
+                    if(success){
+                        $(this).remove();
+                    }
+                }
+            });
+        })
+
+        $("#primamModerator").children().click(function(){
+            $("#overlay").show();
+            $($(".modal")[0]).show(); 
+            $("#proslijediPosiljkuWrapper").show();  
+            $("#posiljka_id").val($(this).children()[0].innerHTML);
+            $("#konacni_ured").val($(this).children()[2].innerHTML)
+            $stigaoNaOdrediste = $(this).children()[3].innerHTML;
+
+            switch($stigaoNaOdrediste){
+                case 'Da': 
+                    $("#proslijediPosiljkuBtn").val("Isporuči");
+                    $("#sljedeci_ured_txtBox").hide();
+                    $("#proslijediPosiljkuBtn").click(function(){
+                        $.ajax({
+                            method: "POST",
+                            url: "api.php?update_posiljkaProslijedi=1",
+                            data: { posiljka_id:$("#posiljka_id").val() },
+                        }).done(function(data) {
+                            location.reload();
+                        });
+                    }); 
+                ;break;
+                case 'Ne': 
+                    $("#proslijediPosiljkuBtn").val("Proslijedi"); 
+                    $("#sljedeci_ured_txtBox").show();
+                    $("#proslijediPosiljkuBtn").click(()=>{
+                        if($("#sljedeci_ured").val() == "-1"){
+                            $("#sljedeci_ured").css('outline','solid 3px red');
+                        }
+                        else{
+                            $("#sljedeci_ured").css('outline','none');
+                            $.ajax({
+                                method: "POST",
+                                url: "api.php?update_posiljkaProslijedi=2",
+                                data: {id_trenutniUred: $("#sljedeci_ured").val(), posiljka_id:$("#posiljka_id").val() },
+                            }).done(function(data) {
+                                location.reload();
+                            });
+                        }
+                    }); 
+                break;
+            }
+        })
+
+        function closeModal(){
+            $($(".modal")[0]).hide();
+            $("#zatraziRacunWrappper").hide(); 
+            $("#proslijediPosiljkuWrapper").hide(); 
+        }
+    } 
+    
+    if(window.location.href.includes('postavke')){
+        $(".odblokiraj").click(function(){
+            $.ajax({
+                method: "POST",
+                url: "api.php?update_korisnikUnblock=2",
+                data: {korisnik_id: $(this).siblings()[1].innerHTML },
+            }).done(function(data) {
+                location.reload();
+            });
+        })
     }
 })
