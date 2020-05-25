@@ -17,24 +17,10 @@
         <link rel="stylesheet" href="css/ivuk.css">
     </head>
     <body>
-        <header class="header">
-            <span id="navButton" class="navButton">≡</span>
-            <figure class="headerFigure"><a href="index.html"><img src="multimedija/post-icon.png" class="headerImage"></a></figure>
-            <span class="headerText">POŠTE</span>
-            <button onclick="location.href='./register.html'" class="button" style="grid-column: 4 / span 1;">Register</button>
-            <button onclick="location.href='./login.html'" class="button" style="grid-column: 6 / span 1;">Login</button>
-        </header>
-
-        <nav class="navBar">
-            <a href="posiljke.php" class="navLink">Pošiljke</a>
-            <a href="racuni.php" class="navLink">Računi</a>
-            <a href="uredi.php" class="navLink">Uredi</a>
-            <a href="drzave.php" class="navLink">Države</a>
-            <a href="o_autoru.html" class="navLink">O autoru</a>
-            <a href="dokumentacija.html" class="navLink">Dokumentacija</a>
-            <a href="register.html" class="navLink mobileOnly">Register</a>
-            <a href="login.html" class="navLink mobileOnly">Login</a>
-        </nav>
+       <?php
+            require('komponente/header.php');
+            require('komponente/navBar.php');
+       ?>
 
         <div class="footerWrapper">
 		<main>
@@ -50,10 +36,11 @@
             </div>
         </main>  
 
-        <footer class="footer">
-            <span class="footerText">2020, Vuk Ilija</span>+
-        </footer>  
+        <?php
+            require('komponente/podnozje.php');
+        ?>
         </div>
+        <div id="snackbar"></div>
     </body>
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="javascript/ivuk.js"></script>

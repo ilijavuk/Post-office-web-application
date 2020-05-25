@@ -14,10 +14,61 @@ main{
     margin-top: calc( 85px + 50px );
 }
 
-#greska{
+#snackbar {
+    visibility: hidden; 
+    min-width: 250px; 
+    background-color: #232323;
+    color: #fff; 
+    text-align: center; 
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed; 
+    z-index: 3; 
+    left: 50%; 
+    transform: translateX(-50%);
+    bottom: 130px; 
     font-size: 20px;
-    font-weight: 500;
-    color:red;
+}
+
+#snackbar.show {
+    visibility: visible; 
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 130px; opacity: 1;}
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 130px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+    from {bottom: 130px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+    from {bottom: 130px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+
+#cookiePopup{
+    display: none;
+    box-sizing: border-box;
+    position: fixed;
+    width: 100%;
+    min-height: 60px;
+    bottom: 85px;
+    z-index: 3;
+    border: 1px solid #707070;
+    border-radius: 5px;
+    background-color: #f1cd7b;
+    padding: 15px;
+    font-size: 19px;
 }
 
 .footerWrapper{
@@ -147,7 +198,7 @@ main{
     font-weight: bold;
     height: 100%;
     width: 60%;
-    grid-template-rows: repeat(8, 70px) auto;
+    grid-template-rows: repeat(11, 1fr) auto;
     justify-content: center;
 
     transform: translateX(-100%);
@@ -212,7 +263,6 @@ label{
     width: 100%;
     margin-bottom: 15px;
 }
-
 .text{
     box-sizing: border-box;
     width: 100%;
@@ -253,8 +303,12 @@ table{
     width: 100%;
 }
 
-tbody>tr:nth-child(odd){
-    background-color: #f1cd7b;
+tbody>tr:nth-child(even){
+    background-color: #f1cd7b !important;
+}
+
+th:hover,thead{
+    cursor: pointer !important;
 }
 
 .select-css{
@@ -385,6 +439,38 @@ tbody>tr:nth-child(odd){
     height: 100%;
 }
 
+.checkbox{
+    margin: 0;
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 24px;
+    width: 24px;
+    z-index: 1;
+}
+
+.checkboxContainer{
+    display: inline-block;
+    position: relative;
+    user-select: none;
+    height: 24px;
+    width: 24px;
+    margin: 0 8px 0 0;
+}
+
+.checkmark{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 24px;
+    width: 24px;
+    background: url("../multimedija/box.svg") no-repeat center;
+}
+
+.checkbox:checked + .checkmark{
+    background:  url("../multimedija/tick-icon.svg") no-repeat center ,url("../multimedija/box.svg");    
+}
+
 @keyframes slide-in {
     100% { transform: translateX(0%); }
 }
@@ -431,6 +517,8 @@ tbody>tr:nth-child(odd){
     .switchShowingWrapper{
         grid-auto-flow: column;
     }
+
+    /* Postavke tablet */    
 }
 
 @media only screen and (min-width: 1034px){
@@ -548,6 +636,24 @@ tbody>tr:nth-child(odd){
         grid-template-columns: 1fr 1fr 1fr;
         gap: 15px;
         column-gap: 15px;
+    }
+
+    /* Postavke desktop */
+
+    .textbox.inlineWithBtn{
+        display: inline-block;
+        width: calc( 100% - 265px );
+    }
+    
+    .inlineBtn{
+        position: relative;
+        top: -1px;
+        width: 265px;
+    }
+
+    #searchDnevnik{
+        min-width: 431.562px;
+        width: 33.3333333334%;
     }
 
     @keyframes showing-right {

@@ -1,4 +1,37 @@
 $(()=>{
+    console.log('c');
+    var kolacic = document.cookie.split("; ");
+    let prihvatioUvjete = false;
+    for(var i = 0; i < kolacic.length; i++){
+        var naziv = kolacic[i].split("=")[0];
+        var vrijednost = kolacic[i].split("=")[1]
+        if(naziv == 'uvjetiKoristenja' && vrijednost == '1'){
+            prihvatioUvjete = true;
+        }
+    } 
+    if(!prihvatioUvjete){
+        let cookiePopup = '<div id="cookiePopup"><p>Ova stranica koristi kolačiće. Korištenjem ove stranice prihvaćate naše uvjete korištenja <input type="button" id="acceptCookies" value="Slažem se"></p></div>';
+        $("body").append(cookiePopup);
+        $('#acceptCookies').parents('div').fadeIn( 1000 );
+        $("#acceptCookies").click(()=>{
+            $('#acceptCookies').parents('div').fadeOut( 1000 );
+            $.ajax({
+                url: "api.php?fetch_trajanjeKolacica",
+            }).done(function(data) {
+                document.cookie = `uvjetiKoristenja=1;path=/;Max-Age=${data}`;
+                $('#acceptCookies').parents('div').fadeOut( 1000 );
+
+                $.ajax({
+                    url: "api.php?update_cookiesAccept",
+                }).done(function(data) {
+                    $("#snackbar").html('Uvjeti prihvaćeni');
+                    showSnackbar();
+                });
+
+            });
+        });
+    }
+
     let on = false;
     $("#navButton").click(() => {
         if(on){
@@ -40,7 +73,6 @@ $(()=>{
         }
 
         $('#submitBtn').click(()=>{
-            $("#greska").html('');
             let provjeraProsla = true;
             
             if($("#lozinka").val() == ''){
@@ -58,6 +90,7 @@ $(()=>{
                             url: "api.php?login",
                             data:{korisnicko_ime: $("#korisnicko_ime").val(), lozinka: $("#lozinka").val() }
                         }).done(function(data) {
+                            console.log(data);
                             prikaziOdgovor(data);
                         });
                     }
@@ -82,10 +115,11 @@ $(()=>{
 
         function prikaziOdgovor(odgovor){
             switch(odgovor){
-                case "1": location.href='index.html';break;
-                case "0": $("#greska").html('Prijava nije uspjela');break;
-                case "Zaključani ste!":  $("#greska").html('Zaključani ste!');break;
+                case "1": location.href='index.php';break;
+                case "0": $("#snackbar").html('Prijava nije uspjela');break;
+                case "Zaključani ste!":  $("#snackbar").html('Zaključani ste!');break;
             }
+            showSnackbar();
         }
     }
 
@@ -93,28 +127,30 @@ $(()=>{
         $(".textbox").each(function(){
             if($($(this).children()[1]).val() == ''){
                 $($(this).children()[1]).on('input',function(){$(this).css('outline','none');})
-                $("#greska").html('');
             }
         })
 
         $("#submitBtn").click(()=>{
-            $("#greska").html('');
             let provjeraProsla = true;
             $(".textbox").each(function(){
                 if($($(this).children()[1]).val() == ''){
                     $($(this).children()[1]).css('outline','solid 1px red');
                     provjeraProsla = false;
+                    $("#snackbar").html('Niste popunili sva polja');
+                    showSnackbar();
                 }
             })
 
             if($("#lozinka").val() != $("#potvrda_lozinke").val()){
                 $("#potvrda_lozinke").css('outline', 'solid 1px red');
-                $("#greska").html('Lozinke se ne podudaraju');
+                $("#snackbar").html('Lozinke se ne podudaraju');
+                showSnackbar();
                 provjeraProsla = false;
             }
 
             if($("#korisnicko_ime").val().length < 3){
-                $("#greska").html('Korisničko ime je prekratko (min 3 znamenke)');
+                $("#snackbar").html('Korisničko ime je prekratko (min 3 znamenke)');
+                showSnackbar();
                 provjeraProslaProsla = false;
             }
             
@@ -125,7 +161,8 @@ $(()=>{
             }).done(function(data) {
                 if(data != '0'){
                     provjeraProsla = false;
-                    $("#greska").html('To korisničko ime je već zauzeto');
+                    $("#snackbar").html('To korisničko ime je već zauzeto');
+                    showSnackbar();
                 }
             });
 
@@ -136,7 +173,7 @@ $(()=>{
                     data:{ime: $("#ime").val(), prezime: $("#prezime").val(), korisnicko_ime: $("#korisnicko_ime").val(), email: $("#email").val(), lozinka: $("#lozinka").val() }
                 }).done(function(data) {
                     if(data=="uspjeh"){
-                        window.location.href="login.html";
+                        window.location.href="login.php";
                     }
                 });
             }
@@ -217,21 +254,26 @@ $(()=>{
         })
 
         $(".postanskiUred").click(function(){
-            $('.modal').show();
-            $('#overlay').show();
             $.ajax({
                 method: "POST",
                 url: "api.php?fetch_galerija",
                 data: {postanskiUred_id: $(this).children()[6].innerHTML },
             }).done(function(data) {
                 polje=(data.split(' '));
-                polje.forEach(element => {
-                    if(element != ''){
-                        let e = `<figure class="galleryFigure"><img src=${element} style="width:100%;"/></figure>`;
-                        console.log(e);
-                        $("#gallery").append(e);
-                    }}
-                ); 
+                if(polje.length > 1){
+                    $('.modal').show();
+                    $('#overlay').show();
+                    polje.forEach(element => {
+                        if(element != ''){
+                            let e = `<figure class="galleryFigure"><img src=${element} style="width:100%;"/></figure>`;
+                            $("#gallery").append(e);
+                        }}
+                    ); 
+                }
+                else{
+                    $("#snackbar").html('Za taj ured ne postoje slike');
+                    showSnackbar();
+                }
             });
         })
 
@@ -307,11 +349,33 @@ $(()=>{
             }
             return copy;
         }
+
+        $("#insertPostanskiBtn").click(function(){
+            if($("#naziv").val() == '' || $("#adresa").val() == '' || $("#poštanskiBroj").val() == ''){
+                $("#snackbar").html('Niste ispunili sva polja');
+                showSnackbar();
+            }
+            else{
+                $.ajax({
+                    method: 'POST',
+                    url: './api.php?insert_postanskiUred',
+                    data: { id_moderatora: $("#moderator").val(), id_drzave: $("#drzava").val(), naziv: $("#naziv").val(), adresa: $("#adresa").val(), postanskiBroj: $("#poštanskiBroj").val() }
+                }).done(function(data){
+                    if(data == 'Uspjeh'){
+                        $("#snackbar").html('Ured uspješno dodan');
+                        showSnackbar();
+                    }
+                    else{
+                        $("#snackbar").html('Ured nije dodan');
+                        showSnackbar();
+                    }
+                })
+            }
+        });
     }
     
     if(window.location.href.includes("drzave")){
         $("#submitBtn").click(()=>{
-            console.log($("#naziv").val(), $("#skraceniOblik").val(), $("#produzeniOblik").val(), $("#clanEU").val())
             if($("#naziv").val() == "" || $("#skraceniOblik").val() == "" || $("produzeniOblik").val() == "")
             {
                 alert("ne valja");
@@ -337,7 +401,6 @@ $(()=>{
         $("#showingRight").click(()=>{switchShowing(2)});
 
         function removeActiveClass(){
-            $("#greska").html('');
             $("#showingLeft").removeClass('activeShow');
             $("#showingMiddle").removeClass('activeShow');
             $("#showingRight").removeClass('activeShow');
@@ -409,7 +472,8 @@ $(()=>{
 
         $("#blockBtn").click(()=>{
             if($("#blokirajNa").val() == "" || isNaN($("#blokirajNa").val())){
-                $("#greska").html('Niste popunili sva polja');
+                $("#snackbar").html('Niste popunili sva polja');
+                showSnackbar();
                 closeModal();
             }
             else{
@@ -421,7 +485,8 @@ $(()=>{
                     url: "api.php?update_korisnikBlock",
                     data: {korisnik_id: $("#korisnik_id").val(), blokiranDo: d},
                 }).done(function(data) {
-                    $("#greska").html('Korisnik uspješno blokiran');
+                    $("#snackbar").html('Korisnik uspješno blokiran');
+                    showSnackbar();
                     closeModal();
                 });    
             }
@@ -445,7 +510,7 @@ $(()=>{
                 });    
             }
             else{
-                $("#greska").html('Niste popunili sva polja');
+                $("#snackbar").html('Niste popunili sva polja');
                 closeModal();
             }
         })
@@ -489,7 +554,6 @@ $(()=>{
                     $(this).css('outline','3px solid green');
                     $iznos_obrade = $("#obrada").val();
                     $racun_id = $("#racun_id").html();
-                    console.log($iznos_obrade,$racun_id);
 
                     let success = 0;
                     $.ajax({
@@ -497,7 +561,6 @@ $(()=>{
                         url: "api.php?update_racunDodajIznos",
                         data: {iznos_obrade: $iznos_obrade, racun_id:$racun_id },
                     }).done(function(data) {
-                        console.log(data);
                         if(data == "Uspjeh"){
                             success = 1;
                         }
@@ -513,7 +576,65 @@ $(()=>{
     }
 
     if(window.location.href.includes("posiljke")){
-        console.log('posiljke');
+        if($("#saljemTable"))
+        $('#saljemTable').DataTable({
+            "pageLength": 7,
+            responsive: true,
+            "dom": 'f<"top">rt<"bottom"p><"clear">',
+            "language": {
+              "emptyTable": "Trenutno ne šaljete nijednu pošiljku",
+              "sZeroRecords": "Ne postoje pošiljke s traženim pojmom"
+            }
+        });
+        if($("#primamTable"))
+        $('#primamTable').DataTable( {
+            "columnDefs": [
+                {
+                    "targets": [ 5 ],
+                    "visible": false,
+                    "searchable": false
+                }
+            ],
+            "dom": 'f<"top">rt<"bottom"p><"clear">',
+            "language": {
+              "emptyTable": "Trenutno ne primate nijednu pošiljku",
+              "sZeroRecords": "Ne postoje pošiljke s traženim pojmom"
+            }
+        } );
+        if($("#primamModerator"))
+        $('#primamModerator').DataTable( {
+            "columnDefs": [
+                {
+                    "targets": [ 0 ],
+                    "visible": false,
+                    "searchable": false
+                }
+            ],
+            "dom": 'f<"top">rt<"bottom"p><"clear">',
+            "language": {
+              "emptyTable": "Trenutno nema novih pošiljki u vašem uredu",
+              "sZeroRecords": "Ne postoje pošiljke s traženim pojmom"
+            }
+        } );
+        if($("#statistikaTable"))
+            $('#statistikaTable').DataTable();
+
+        if($("#zahtjeviTable"))
+        $('#zahtjeviTable').DataTable( {
+            "columnDefs": [
+                {
+                    "targets": [ 0 ],
+                    "visible": false,
+                    "searchable": false
+                },
+            ],
+            "dom": 'f<"top">rt<"bottom"p><"clear">',
+            "language": {
+              "emptyTable": "Trenutno nemate zahtjeva",
+              "sZeroRecords": "Ne postoje zahtjevi s traženim pojmom"
+            }
+        } );
+
         $("#showingLeft").click(()=>{switchShowing(0)});
         $("#showingMiddle1").click(()=>{switchShowing(1)});
         $("#showingMiddle2").click(()=>{switchShowing(2)});
@@ -525,7 +646,6 @@ $(()=>{
         })
 
         function removeActiveClass(){
-            $("#greska").html('');
             $("#showingLeft").removeClass('activeShow');
             $("#showingMiddle1").removeClass('activeShow');
             $("#showingMiddle2").removeClass('activeShow');
@@ -539,7 +659,6 @@ $(()=>{
         }
 
         function switchShowing(switchTo){
-            console.log('cl');
             if(switchTo == 0){
                 removeActiveClass();
                 $("#showingLeft").addClass('activeShow');
@@ -564,17 +683,22 @@ $(()=>{
         }
 
         $("#posaljiPosiljkuBtn").click(()=>{
+            if($("#masa").val() == ''){
+                $("#snackbar").html("Niste popunili sva polja");
+                showSnackbar();
+            }
             $.ajax({
                 method: "POST",
                 url: "api.php?insert_posiljka",
                 data: {id_primatelja: $("#ime_primatelja").val(), masa: $("#masa").val()},
             }).done(function(data) {
-                console.log(data)
                 if(data == "Uspjeh"){
-                    $("#greska").html("Pošiljka uspješno poslana");
+                    $("#snackbar").html("Pošiljka uspješno poslana");
+                    showSnackbar();
                 }
                 else{
-                    $("#greska").html("Došlo je do pogreške, molimo pokušajte opet");
+                    $("#snackbar").html("Došlo je do pogreške, molimo pokušajte opet");
+                    showSnackbar();
                 }
             });    
         });
@@ -588,8 +712,6 @@ $(()=>{
             $ime_posiljatelja = $(this).children()[0].innerHTML;
             $cijenaPoKg = $(this).children()[2].innerHTML;
             $masa = $(this).children()[3].innerHTML;
-
-            console.log($id_posiljka, $ime_posiljatelja, $cijenaPoKg, $masa);
 
             $("#id_posiljka").val($id_posiljka);
             $("#ime_posiljatelja").val($ime_posiljatelja);
@@ -661,7 +783,7 @@ $(()=>{
             });
         })
 
-        $("#primamModerator").children().click(function(){
+        $("#primamModerator").children().not('.dataTables_empty').click(function(){
             $("#overlay").show();
             $($(".modal")[0]).show(); 
             $("#proslijediPosiljkuWrapper").show();  
@@ -713,14 +835,190 @@ $(()=>{
     } 
     
     if(window.location.href.includes('postavke')){
+        let poljeSPodatcima = $("#dnevnikTbody").children();
+        let nocniNacinRada = false;
+        for(var i = 0; i < kolacic.length; i++){
+            var naziv = kolacic[i].split("=")[0];
+            var vrijednost = kolacic[i].split("=")[1]
+            if(naziv == 'nocniNacinRada'){
+                if( vrijednost == "true" ){
+                    nocniNacinRada = true;
+                    $("#nocniNacinRada").prop('checked', true);
+                }
+                else if( vrijednost == "false"){
+                    nocniNacinRada = false;
+                    $("#nocniNacinRada").prop('checked', false);
+                }
+            }
+        } 
+        $("#showingLeft").click(()=>{switchShowing(0)});
+        $("#showingRight").click(()=>{switchShowing(1)});
+
+        function removeActiveClass(){
+            $("#showingLeft").removeClass('activeShow');
+            $("#showingRight").removeClass('activeShow');
+            $("#everyUser").hide();
+            $("#adminOnly").hide();
+        }
+
+        function switchShowing(switchTo){
+            removeActiveClass();
+            if(switchTo == 0){
+                $("#showingLeft").addClass('activeShow');
+                $("#everyUser").show();
+            }
+            else if(switchTo == 1){
+                $("#showingRight").addClass('activeShow');
+                $("#adminOnly").show();
+            }
+        }
+
         $(".odblokiraj").click(function(){
             $.ajax({
                 method: "POST",
                 url: "api.php?update_korisnikUnblock=2",
                 data: {korisnik_id: $(this).siblings()[1].innerHTML },
             }).done(function(data) {
-                location.reload();
+                $(this).parent().remove();
+                $("#snackbar").html('Korisnik uspješno odblokiran');
+                showSnackbar();
             });
         })
+        
+        $("#resetirajUvjeteBtn").click(function(){
+            $.ajax({
+                url: "api.php?update_cookiesReset",
+            }).done(function(data) {
+                $("#snackbar").html('Uvjeti korištenja uspješno resetirani');
+                showSnackbar();
+            });
+        })
+
+        $("#nocniNacinRada").click(function(){
+            document.cookie = nocniNacinRada + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            document.cookie = `nocniNacinRada=${$("#nocniNacinRada").prop('checked')};path=/`;
+        })
+
+        $("#postaviTrajanjeKolacica").click(function(){
+            if($("#trajanjeKolacica").val() == '' || isNaN($("#trajanjeKolacica").val())){
+                $("#snackbar").html('Niste popunili polje s vrijednosti');
+                showSnackbar();
+            }
+            else{
+                $.ajax({
+                    method: 'POST',
+                    url: './api.php?update_postavkeSet',
+                    data: { trajanjeKolacica: $("#trajanjeKolacica").val() },
+                }).done(function(data){
+                    if(data == 'Uspjeh'){
+                        $("#snackbar").html('Trajanje kolačića uspješno postavljeno');
+                        showSnackbar();
+                    }
+                    else{
+                        $("#snackbar").html('Postavljanje trajanja kolačića nije uspjelo');
+                        showSnackbar();
+                    }
+                })
+            }
+        })
+
+        $("#postaviTrajanjeSesije").click(function(){
+            if($("#trajanjeSesije").val() == '' || isNaN($("#trajanjeSesije").val())){
+                $("#snackbar").html('Niste popunili polje s vrijednosti');
+                showSnackbar();
+            }
+            else{
+                $.ajax({
+                    method: 'POST',
+                    url: './api.php?update_postavkeSet',
+                    data: { trajanjeSesije: $("#trajanjeSesije").val() },
+                }).done(function(data){
+                    console.log(data);
+                    if(data == 'Uspjeh'){
+                        $("#snackbar").html('Trajanje sesije uspješno postavljeno');
+                        showSnackbar();
+                    }
+                    else{
+                        $("#snackbar").html('Postavljanje trajanja sesije nije uspjelo');
+                        showSnackbar();
+                    }
+                })
+            }
+        })
+
+        $("#postaviStranicenje").click(function(){
+            if($("#stranicenje").val() == '' || isNaN($("#stranicenje").val())){
+                $("#snackbar").html('Niste popunili polje s vrijednosti');
+                showSnackbar();
+            }
+            else{
+                $.ajax({
+                    method: 'POST',
+                    url: './api.php?update_postavkeSet',
+                    data: { stranicenje: $("#stranicenje").val() },
+                }).done(function(data){
+                    console.log(data)
+                    if(data == 'Uspjeh'){
+                        $("#snackbar").html('Straničenje uspješno postavljeno');
+                        showSnackbar();
+                    }
+                    else{
+                        $("#snackbar").html('Postavljanje straničenja nije uspjelo');
+                        showSnackbar();
+                    }
+                })
+            }
+        })
+
+        $(".dnevnikRedak").click(function(){
+            $("#snackbar").html( $(this).children()[3].innerHTML == '' ? 'Za ovu radnju ne postoji upit' : $(this).children()[3].innerHTML );
+            showSnackbar();
+        });
+
+        $("#filtrirajBtn").click(function(){
+            if($("#do").val() != '' && $("#od").val() != ''){
+                $.ajax({
+                    method: "POST",
+                    url: "./api.php?fetch_dnevnikRada",
+                    data: { od: $("#od").val(), do: $("#do").val() }
+                }).done(function(data){
+                    $("#dnevnikTbody").empty();
+                    $("#dnevnikTbody").append(data);
+                })
+            }
+            else{
+                $("#snackbar").html('Niste popunili sva polja');
+                showSnackbar();
+            }
+        })
+
+        $("#search").on('input',function(){
+            let array = filterDnevnik($("#search").val(),poljeSPodatcima);
+            if(array.length > 0){
+                $("#dnevnikTbody").append(array);
+            }
+            else{
+                $("#dnevnikTbody").append("<tr><td colspan=3>Za upisani pojam ne postoje podatci</td></tr>");
+            }
+        })
+
+        function filterDnevnik(val, array){
+            $array = $(array);
+            let length = $array.length; 
+            let copy = [];
+            $("tbody").empty();
+            for(var i = 0; i < length; i++){
+                if($array[i].children[0].innerHTML.includes(val) == true || $array[i].children[1].innerHTML.includes(val) == true || $array[i].children[2].innerHTML.includes(val) == true){
+                    copy.push($array[i]);
+                }
+            }
+            return copy;
+        }
+    }
+
+    function showSnackbar() {
+        var x = document.getElementById("snackbar");
+        x.className = "show";
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
     }
 })
