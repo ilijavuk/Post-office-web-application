@@ -1,5 +1,4 @@
 $(()=>{
-    console.log('c');
     var kolacic = document.cookie.split("; ");
     let prihvatioUvjete = false;
     for(var i = 0; i < kolacic.length; i++){
@@ -617,7 +616,13 @@ $(()=>{
             }
         } );
         if($("#statistikaTable"))
-            $('#statistikaTable').DataTable();
+            $('#statistikaTable').DataTable({
+                "dom": 'f<"top">rt<"bottom"p><"clear">',
+                "language": {
+                "emptyTable": "U ovom uredu nema postojećih pošiljki",
+                "sZeroRecords": "Ne postoje pošiljke s traženim pojmom"
+                }
+            });
 
         if($("#zahtjeviTable"))
         $('#zahtjeviTable').DataTable( {
@@ -826,6 +831,40 @@ $(()=>{
                 break;
             }
         })
+
+        drawCanvas([[12,'Poslane pošiljke'],[2,'Broj plaćenih']]);
+
+        function drawCanvas(values){
+            $canvas = $("#canvas");
+            let canvasContext = canvas.getContext("2d");
+            canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    
+            let drawOn = 10;
+            let height = canvas.height;
+            let width = canvas.width;
+            let columnWidth = (width-10-10*values.length)/values.length;
+            canvasContext.fillRect(0, height-40, width, 3);
+
+            let mjernaJedinica = (height-50-40)/Math.max(Math.max(...values));
+            for(var i = 0; i < values.length; i++){
+                canvasContext.fillStyle = ("#"+(Math.floor( Math.random() * parseInt('0xFFFFFF') )+1).toString(16)); 
+                canvasContext.fillRect(drawOn, height-40, columnWidth, -1*values[i][0]*mjernaJedinica);
+                canvasContext.fillStyle = "#000000"
+                canvasContext.font = "24px Segoe UI";
+                canvasContext.fillText(values[i][0], drawOn+(columnWidth)/2-canvasContext.measureText(values[i][0]).width/2, height-values[i]*mjernaJedinica-15-40);
+                canvasContext.font = "16px Segoe UI";
+                canvasContext.fillText(values[i][1], drawOn+(columnWidth)/2-canvasContext.measureText(values[i][1]).width/2, height-20+8);
+                drawOn += columnWidth+10;
+            }
+        }
+
+        function drawValue(value){
+            
+        }
+
+        drawValue(1);
+        drawValue(2);
+        drawValue(5);
 
         function closeModal(){
             $($(".modal")[0]).hide();

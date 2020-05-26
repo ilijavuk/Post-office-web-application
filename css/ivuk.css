@@ -276,6 +276,10 @@ label{
     text-align: center;
 }
 
+tbody{
+    text-align: center;
+}
+
 .submit{
     width: 100%;
     height: 45px;
@@ -301,6 +305,11 @@ label{
 table{
     font-size: 22px;
     width: 100%;
+    max-width: 100%;
+}
+
+thead{
+    padding: 0;
 }
 
 tbody>tr:nth-child(even){
@@ -449,6 +458,12 @@ th:hover,thead{
     z-index: 1;
 }
 
+#canvas{
+    width: 100%;
+    margin: 0 auto;
+    display: block;
+}
+
 .checkboxContainer{
     display: inline-block;
     position: relative;
@@ -519,6 +534,11 @@ th:hover,thead{
     }
 
     /* Postavke tablet */    
+
+    /* Statistika tablet */       
+    #canvas{
+        width: 60%;
+    }
 }
 
 @media only screen and (min-width: 1034px){
@@ -656,6 +676,11 @@ th:hover,thead{
         width: 33.3333333334%;
     }
 
+    /* Statistika desktop */       
+    #canvas{
+        width: 40%;
+    }
+
     @keyframes showing-right {
         0% { transform: translateX(0%); }
         100% { transform: translateX(100%); }
@@ -672,3 +697,12 @@ th:hover,thead{
     }
 }   
 
+@media only print{
+    .header, .navBar, .footer, .switchShowingWrapper{
+        display: none;
+    }
+    
+    main{
+        margin-top: 0;
+    }
+}

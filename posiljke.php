@@ -131,12 +131,12 @@
                                 <hr>
                                 <table id="saljemTable">
                                 <thead>
-                                    <th>Ime primatelja</th>
-                                    <th>Trenutni ured</th>
-                                    <th>Stigla na odredište?</th>
-                                    <th>Cijena po kg</th>
+                                    <th>Primatelj</th>
+                                    <th>Trenutno</th>
+                                    <th>Stigla?</th>
+                                    <th>kn/kg</th>
                                     <th>Masa</th>
-                                    <th>Spremna za isporuku</th>
+                                    <th>Spremna</th>
                                 </thead>
                             <tbody>';
                             while($red = mysqli_fetch_assoc($rezultat2)){
@@ -227,6 +227,7 @@
                     if($_SESSION['uloga']  >= 2){
                         echo '
                         <div id="statistikaWrapper" style="display:none;">
+                            <h4 onclick="window.print();"> Print </h4>
                             <div class="switchShowingWrapper posiljkeSwitch"  style="border:none;">
                                 <div class = "textbox">
                                     <label for="od">Od</label>
@@ -262,7 +263,9 @@
                                 }
                             echo '</tbody>
                             </table>
-                        </div>';
+                            <canvas id="canvas" height="300" style="border:1px solid #f1cd7b;"></canvas>
+                        </div>
+                        ';
                     }
                 ?>
                 <?php
