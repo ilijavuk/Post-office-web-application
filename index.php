@@ -3,7 +3,7 @@
     <head>
         <title>Početna stranica</title>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
         <meta name="author" content="Ilija Vuk">
         <meta name="keywords" content="Project home page">
         <meta name="description" content="Home page for the WebDiP Project">
@@ -15,6 +15,7 @@
         <meta property="og:title" content="WebDiP Project - Ilija Vuk" />
 
         <link rel="stylesheet" href="css/ivuk.css">
+
     </head>
     <body>
        <?php
@@ -43,5 +44,6 @@
         <div id="snackbar"></div>
     </body>
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js"></script>
     <script src="javascript/ivuk.js"></script>
 </html>

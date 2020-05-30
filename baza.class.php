@@ -43,9 +43,9 @@
             if($this->veza->connect_errno){
                 echo "Greška kod upita: {$upit} - ". $this->veza->connect_errno . ", ".$this->veza->connect->error;
                 $this->greska = $this->veza->connect_error;
-                return "neuspjeh";
+                return "Neuspjeh";
             }
-            return "uspjeh";
+            return "Uspjeh";
         }
 
         function pogreskaDB(){
@@ -56,6 +56,4 @@
             }
         }
     }
-
-
 ?>

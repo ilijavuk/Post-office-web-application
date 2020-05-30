@@ -140,7 +140,7 @@
                                 </thead>
                             <tbody>';
                             while($red = mysqli_fetch_assoc($rezultat2)){
-                                $stigla = ($red['id_trenutniUred'] == $red['id_konacniUred']) ? 'Da' : 'Ne';
+                                $stigla = ($red['id_trenutniUred'] == $red['id_konacniUred'] && $red['id_trenutniUred'] != null) ? 'Da' : 'Ne';
                                 echo  ' <tr>
                                 <td>'.$red['ime_primatelja'].'</td>
                                 <td>'.$red['trenutni_ured'].'</td>
@@ -165,7 +165,7 @@
                                     <th>Cijena po kg</th>
                                     <th>Masa</th>
                                     <th>Spremna za isporuku</th>
-                                    <th>ID</th>
+                                    <th style="display:none;">ID</th>
                                 </thead>
                             <tbody>';
 
@@ -198,12 +198,12 @@
                         <hr>
                         <table id="primamModerator">
                             <thead>
-                                <th>ID</th>
+                                <th style="display: none;">ID</th>
                                 <th>Trenutni ured</th>
                                 <th>Konačni ured</th>
                                 <th>Stigao na odredište</th>
                             </thead>
-                        <tbody id="primamModerator">';
+                        <tbody id="primamModeratorTBody">';
 
                         while($red = mysqli_fetch_assoc($rezultat7)){
                             $stigaoNaOdrediste = ($red['trenutni_ured'] == $red['konacni_ured']) ? 'Da' : 'Ne' ;
@@ -262,8 +262,13 @@
                                     </tr>';
                                 }
                             echo '</tbody>
-                            </table>
-                            <canvas id="canvas" height="300" style="border:1px solid #f1cd7b;"></canvas>
+                            </table>';
+                            if($rezultat4->num_rows > 0){
+                                echo '<h2 style="margin-top: 50px;">PP - Poslane pošiljke</h2>
+                                <h2>BP - Broj plaćenih</h2>
+                                <canvas id="canvas" height="300" style="border:1px solid #f1cd7b;"></canvas>';
+                            }
+                        echo '
                         </div>
                         ';
                     }
@@ -274,7 +279,7 @@
                         <hr>
                         <table id="zahtjeviTable">
                         <thead>
-                            <th>ID</th>
+                            <th style="display:none;">ID</th>
                             <th>Ime pošiljatelja</th>
                             <th>Ime primatelja</th>
                             <th>Masa</th>
@@ -286,7 +291,7 @@
                    
                     while($red = mysqli_fetch_assoc($rezultat6)){
                         echo  ' <tr>
-                        <td >'.$red['posiljka_id'].'</td>
+                        <td style="display:none;">'.$red['posiljka_id'].'</td>
                         <td>'.$red['ime_posiljatelja'].'</td>
                         <td>'.$red['ime_primatelja'].'</td>
                         <td>'.$red['masa'].'</td>
@@ -389,7 +394,7 @@
                         echo '</select> 
                 </div>
                 <div class="buttonWrapper" style="width: 100%;">
-                    <input id="proslijediPosiljkuBtn" type = "submit" value = "Proslijedi pošiljku" class="button add" style="margin: 0 auto; width: 150px;"><br>
+                    <input id="proslijediPosiljkuBtn" type = "submit" value = "Proslijedi" class="button add" style="margin: 0 auto; width: 150px;"><br>
                 </div>
             </div>';
             }

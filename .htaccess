@@ -1,0 +1,4 @@
+#AuthName "restricted area"
+#AuthType Basic
+#AuthUserFile ../../../www/ilijavuk/files/webdip_projekt/.htpasswd
+#require user admin

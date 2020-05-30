@@ -37,6 +37,7 @@
         <meta property="og:type" content="Website for a project" /> 
         <meta property="og:title" content="WebDiP Project - Ilija Vuk" />
 
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.css"/>
         <link rel="stylesheet" href="css/ivuk.css">
     </head>
     <body>
@@ -128,7 +129,7 @@
                     }
                 ?>
                 <?php 
-                    if($_SESSION['uloga']  >=2){
+                    if($_SESSION['uloga'] >= 2){
                     echo '
                         <div id="zahtjevi"  style="display: none;">
                             <table>
@@ -145,8 +146,8 @@
                                 echo '<tr">
                                     <td>'.$red['vrijemeIzdavanja'].'</td>
                                     <td>'.$red['iznos'].' kn</td>
-                                    <td> <input type="textbox" class="tableInput" id="obrada" style="background: transparent;"></td>
-                                    <td style="display:none;" id="racun_id">'.$red['racun_id'].'</td>
+                                    <td> <input type="textbox" class="tableInput" style="background: transparent;"></td>
+                                    <td style="display:none;" >'.$red['racun_id'].'</td>
                                 </tr>';   
                                 }
                                 echo '
@@ -200,8 +201,15 @@
                     <label for="slika">Slika(URL)</label>
                     <input type = "text" name = "slika" id="slika" class="text"><br>
                 </div>
+                <div style="display: block; margin-bottom: 15px; height: 20px;">
+                    <span style = "float:left; margin-right: 15px; font-size: 20px;"> Objavi sliku </span>
+                    <div class="checkboxContainer" style="float:left;">
+                        <input type="checkbox" class="checkbox" id="dopustenje"/>
+                        <span class="checkmark"></span>
+                    </div>
+                </div>
                 <div class="buttonWrapper" style="width: 100%;">
-                    <input id="submitBtn" type = "submit" value = "Add" class="button add" style="margin: 0 auto; width: 150px;"><br>
+                    <input id="platiRacun" type = "submit" value = "Plati račun" class="button add" style="margin: 0 auto; width: 150px;"><br>
                 </div>
             </div>
             <div id="blokirajKorisnika" style="display:none;">
@@ -233,5 +241,6 @@
         <div id="snackbar"></div>
     </body>
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js"></script>
     <script src="javascript/ivuk.js"></script>
 </html>

@@ -30,6 +30,7 @@
         <meta property="og:type" content="Website for a project" /> 
         <meta property="og:title" content="WebDiP Project - Ilija Vuk" />
 
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.css"/>
         <link rel="stylesheet" href="css/ivuk.css">
     </head>
     <body>
@@ -93,7 +94,9 @@
             require('komponente/podnozje.php');
         ?> 
         </div>
+        <div id="snackbar"></div>
     </body>
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js"></script>
     <script src="javascript/ivuk.js"></script>
 </html>

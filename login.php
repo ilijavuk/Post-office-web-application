@@ -46,6 +46,11 @@
                         <label for="lozinka">Lozinka</label>
                         <input type = "password" name = "lozinka" id="lozinka" class="text"><br>
                     </div>
+                    <span style = "float:right; margin-right: 15px; font-size: 20px;"> Zapamti me </span>
+                    <div class="checkboxContainer" style="float:right;">
+                        <input type="checkbox" class="checkbox" id="zapamtiMe"/>
+                        <span class="checkmark"></span>
+                    </div>
                     <span class="linkWithUnderline" id="forgottenUsername" style="text-decoration: underline; display: block;">Zaboravili ste korisničko ime? Prijavite se pomoću e-maila</span>
                     <a class="linkWithUnderline" href="passwordRecovery.html">Zaboravili ste lozinku?</a>
                     <div class="buttonWrapper">

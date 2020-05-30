@@ -12,6 +12,7 @@ main{
     position: relative;
     perspective: 1000px;
     margin-top: calc( 85px + 50px );
+    overflow-x: hidden;
 }
 
 #snackbar {
@@ -486,6 +487,11 @@ th:hover,thead{
     background:  url("../multimedija/tick-icon.svg") no-repeat center ,url("../multimedija/box.svg");    
 }
 
+/* Postavke mobile */
+.listaKorisnik_ID{
+    display: none;
+}
+
 @keyframes slide-in {
     100% { transform: translateX(0%); }
 }
@@ -534,6 +540,9 @@ th:hover,thead{
     }
 
     /* Postavke tablet */    
+    .listaKorisnik_ID{
+        display: table-cell;
+    }
 
     /* Statistika tablet */       
     #canvas{
@@ -659,7 +668,7 @@ th:hover,thead{
     }
 
     /* Postavke desktop */
-
+    
     .textbox.inlineWithBtn{
         display: inline-block;
         width: calc( 100% - 265px );
