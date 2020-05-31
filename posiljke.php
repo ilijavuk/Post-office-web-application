@@ -22,7 +22,7 @@
             $rezultat4 = $baza -> SelectDB($upit);
             $upit = "SELECT posiljka_id, t2.naziv AS trenutni_ured, t3.naziv AS konacni_ured FROM posiljka AS t1 LEFT JOIN postanskiUred AS t2 ON t1.id_trenutniUred=t2.postanskiUred_id LEFT JOIN postanskiured AS t3 ON t1.id_konacniUred=t3.postanskiUred_id WHERE t2.id_moderatora = '".$_SESSION['kor_id']."' AND spremnaZaIsporuku='0';";
             $rezultat7 = $baza -> SelectDB($upit);
-            $upit = "SELECT * FROM postanskiUred;";
+            $upit = "SELECT * FROM postanskiured;";
             $rezultat5 = $baza -> SelectDB($upit);
         }
 
@@ -51,6 +51,9 @@
 
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.css"/>
         <link rel="stylesheet" href="css/ivuk.css">
+        <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+        <script src="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js"></script>
+        <script src="javascript/ivuk.js"></script>
     </head>
     <body>
        <?php
@@ -403,7 +406,4 @@
     </div>
     <div id="snackbar"></div>
     </body>
-    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js"></script>
-    <script src="javascript/ivuk.js"></script>
 </html>

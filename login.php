@@ -52,7 +52,7 @@
                         <span class="checkmark"></span>
                     </div>
                     <span class="linkWithUnderline" id="forgottenUsername" style="text-decoration: underline; display: block;">Zaboravili ste korisničko ime? Prijavite se pomoću e-maila</span>
-                    <a class="linkWithUnderline" href="passwordRecovery.html">Zaboravili ste lozinku?</a>
+                    <a class="linkWithUnderline" href="passwordRecovery.php">Zaboravili ste lozinku?</a>
                     <div class="buttonWrapper">
                         <input id="submitBtn" type = "submit" value = "Submit" class="submit"><br>
                     </div>

@@ -67,19 +67,23 @@
                         </select> 
                     
                     </div>  
+                    <!--
                     <div class = "textbox" id="kor_imeTextBox">
                         <label for="search">Pretraži</label>
                         <input type = "text" name = "search" id="search" class="text" style="border: 1px solid #707070;"><br>
                     </div>
+                    -->
                 </div>
                 
                 <table>
                     <thead>
                         <th>Naziv</th>
-                        <th>Adresa</t>
+                        <th>Adresa</th>
                         <th>Poštanski broj</th>
+                        <th style="display: none;">ID države</th>
                         <th id="broj_poslanih">Broj poslanih</th>
                         <th id="broj_primljenih">Broj primljenih</th>
+                        <th style="display: none;">ID Ureda</th>
                     </thead>
                     <tbody>
                         <?php
@@ -102,12 +106,17 @@
                          if($_SESSION['uloga']  == 3){
                              echo '
                             <tr id="elementZaDodavanje">
-                                <td><input type="textbox" class="tableInput" id="naziv"></td>
-                                <td><input type="textbox" class="tableInput" id="adresa"></td>
+                                <td>
+                                    <input type="textbox" class="tableInput" id="naziv">
+                                </td>
+                                <td>
+                                    <input type="textbox" class="tableInput" id="adresa">
+                                </td>
                                 <td>
                                     <input type="textbox" class="tableInput" id="poštanskiBroj">
                                 </td>
-                                <td>  <select class="select-css" id="drzava" style="height: 29px; width: 100%;">';
+                                <td>  
+                                    <select class="select-css" id="drzava" style="height: 29px; width: 100%;">';
                                             $rezultat1->data_seek(0);
                                             while($red = mysqli_fetch_assoc($rezultat1)){
                                                 echo '
@@ -129,7 +138,13 @@
                                                     '.$red["ime"].' '.$red["prezime"].'('.$red["korisnicko_ime"].')
                                                 </option>';
                                         }
-                                echo '</td></tr>';
+                                echo '
+                                </td>
+                                <td style="display: none;">
+                                </td>
+                                <td style="display: none;">
+                                </td>
+                                </tr>';
                             }
                         ?>
                     </tbody>

@@ -301,12 +301,37 @@
         }
     }
 
+    if(isset($_GET['update_korisnikGiveModerator'])){
+        session_start();
+        if($_SESSION['uloga'] == 3){
+            require("baza.class.php"); 
+            $baza = new Baza;
+            $veza = $baza -> spojiDB();
+            $upit = "UPDATE korisnik SET id_uloga=2 WHERE korisnik_id = ?;";
+            $stmt = $veza -> prepare($upit);
+            if($stmt == null){
+                echo json_encode('Neuspjeh');
+            }
+            else{
+                $stmt -> bind_param("i", $_POST['korisnik_id']);
+                $stmt -> execute();
+                if($stmt->affected_rows > 0){
+                    echo json_encode('Uspjeh');
+                    zapisiULog($upit, '2', $veza, 'korisniku dodijeljen moderator');
+                }
+                else{
+                    echo json_encode('Neuspjeh');
+                }
+            }
+        }
+    }
+
     if(isset($_GET['insert_posiljka'])){
         session_start();
         require("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
-        $upit = "INSERT INTO posiljka (id_posiljatelja, id_primatelja, masa) VALUES (?, ?, ?);";
+        $upit = "INSERT INTO posiljka (id_posiljatelja, id_primatelja, masa, vrijeme_slanja) VALUES (?, ?, ?, CURDATE());";
         $stmt = $veza -> prepare($upit);
         if($stmt == null){
             echo json_encode('Neuspjeh $stmt = null');
@@ -443,6 +468,110 @@
             if($stmt->affected_rows > 0){
                 echo json_encode("Uspjeh");
                 zapisiULog($upit, '2', $veza, 'korisnik');  
+                $to = $_POST['email'];
+                $subject = 'POŠTE Aktivacijski link';
+                $message = '
+                <html>
+                <head>
+                    <title>Aktivacijski link</title>
+                    <style>
+                    body{
+                        font-family: Nunito, Roboto, Segoe UI;
+                        font-size: 22px;
+                        width: 100%;
+                        height: 500px;
+                        background-color: #707070;
+                        overflow: hidden;
+                    }
+
+                    .wrapper{
+                        position: absolute;
+                        left: 50%;
+                        top: 0;
+                        transform: translateX(-50%);
+                        background-color: #FFF;
+                        height: 100%;
+                        width: 600px;
+                    }
+
+                    main{
+                        position: absolute;
+                        top: 70px;
+                        padding: 15px;
+                    }
+                    
+                    .header{
+                        width: 600px;
+                        height: 85px;
+                        border: solid 1px #707070;
+                        background-color: #232323;
+                    }
+
+                    .headerText{
+                        position: relative;
+                        bottom: 7px;
+                        font-size: 30px;
+                        color: #f1cd7b;
+                        display: block;
+                        text-align: center;
+                    }
+
+                    .headerFigure{
+                        display: block;
+                        margin: auto;
+                        width: 83px;
+                        object-fit: contain;
+                        position: relative;
+                        top: 5px;
+                    }
+
+                    .headerImage{
+                        width: 100%;
+                    }
+
+                    .boldedText{
+                        font-weight: bold;
+                    }
+                    
+                    a{
+                        text-decoration: none;
+                        color: green;
+                    }
+                    
+                    a:hover{
+                        text-decoration: underline;
+                        cursor: pointer;
+                    }
+
+                    </style>
+                </head>
+                <body>
+                    <div class="wrapper">
+                    <header class="header">
+                    <figure class="headerFigure"><a href="index.php"><img src="http://barka.foi.hr/WebDiP/2019_projekti/WebDiP2019x144/multimedija/post-icon.png" class="headerImage"></a></figure>
+                    <span class="headerText">POŠTE</span>
+                    </header>
+                    <main>
+                    <p class="boldedText">Poštovani '.$_POST['ime'].' '.$_POST['prezime'].', </p>
+                    <p>
+                        Nedavno ste kreirali račun na našoj stranici. Ovim putem Vas pozdravljamo te Vam želimo ugodan ostanak na našoj stranici.
+                    </p>
+                    <p>
+                    Kliknite <a href="http://barka.foi.hr/WebDiP/2019_projekti/WebDiP2019x144/api.php?aktivacija='.$link_aktivacije.'" boldedText>OVDJE</a> kako bi aktivirali svoj račun
+                    </p>
+                    </main>
+                    </div>
+
+                    </body>
+                </html>
+                ';
+                        
+                $headers[] = 'MIME-Version: 1.0';
+                $headers[] = 'Content-type: text/html; charset=iso-8859-1';
+                $headers[] = 'From: Poste@foi.hr' . "\r\n" .
+                    'Reply-To: Poste@foi.hr' . "\r\n";
+
+                mail($to, $subject, $message, implode("\r\n", $headers));
             }
             else{
                 echo json_encode("Neuspjeh");
@@ -450,17 +579,17 @@
         }
     }
 
-    if(isset($_GET['update_korisnikActivate'])){
+    if(isset($_GET['aktivacija'])){
         require("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
-        $upit = "SELECT * FROM korisnik WHERE korisnicko_ime = ?;";
+        $upit = "SELECT * FROM korisnik WHERE linkAktivacije = ?;";
         $stmt = $veza -> prepare ($upit);
         if($stmt == null){
             echo json_encode('Neuspjeh');
         }
         else{
-            $stmt -> bind_param("s", $_POST['korisnicko_ime']);
+            $stmt -> bind_param("s", $_GET['aktivacija']);
             $stmt -> execute();
 
             $rezultat = $stmt->get_result();
@@ -471,7 +600,12 @@
             if ($red = $rezultat->fetch_assoc())
             {
                 echo json_encode('1');
-                zapisiULog($upit, '2', $veza, 'korisnik activate');  
+                $upit = "UPDATE korisnik SET id_status = 2, linkAktivacije='' WHERE linkAktivacije = ?;";
+                $stmt = $veza -> prepare ($upit);
+                $stmt -> bind_param("s", $_GET['aktivacija']);
+                $stmt -> execute();
+                zapisiULog($upit, '2', $veza, 'korisnik activate'); 
+                header("Location: login.php"); 
             }
             else{
                 echo json_encode('0');
@@ -514,12 +648,26 @@
     
             if ($red = $rezultat->fetch_assoc())
             {
+                if($red['id_status'] == 1){
+                    echo json_encode('Vaš račun nije aktiviran! Aktivacijska poruka Vas čeka u vašoj e-pošti');
+                    die;
+                }
                 if($red['neuspjeliLogin'] >= $brojPokusaja){
                     echo json_encode('Zaključani ste!',JSON_UNESCAPED_UNICODE);
                 }
                 else if($red['lozinka_sha1'] == $lozinka_sha1){
                     $_SESSION['kor_id'] = $red['korisnik_id'];
                     $_SESSION['uloga'] = $red['id_uloga'];
+                    if($red['id_status'] == 3 && strtotime($red['blokiranDo']) > strtotime("now")){
+                        $_SESSION['blokiran'] = "1";
+                    }
+                    else if($red['id_status'] == 3 && strtotime($red['blokiranDo']) < strtotime("now")){
+                        $upit3 = "UPDATE korisnik SET blokiranDo = NULL, id_status = 2 WHERE korisnicko_ime = ?";
+                        $stmt = $veza -> prepare ($upit3);
+                        $stmt -> bind_param("s", $_POST['korisnicko_ime']);
+                        $stmt -> execute();
+                    }
+
                     if($red['uvjeti'] == 0){
                         unset($_COOKIE['uvjetiKoristenja']); 
                         setcookie('uvjetiKoristenja', null, -1, '/'); 
@@ -647,6 +795,25 @@
         }
     }
 
+    if(isset($_GET['fetch_tema'])){
+        require("baza.class.php"); 
+        $baza = new Baza;
+        $baza -> spojiDB();
+        if(isset($_POST['fetchNightMode'])){
+            $upit = "SELECT pozadina, bojaFonta, velicinaFonta FROM tema WHERE naziv = 'Dark';";
+        }
+        else{
+            $upit = "SELECT naziv FROM tema INNER JOIN postavke ON postavke.tema=tema.tema_id;";
+        }
+        $rezultat = $baza -> SelectDB($upit);
+
+        if($red = mysqli_fetch_assoc($rezultat)){
+            echo json_encode($red);
+        }
+    }
+
+    
+
     if(isset($_GET['update_cookiesAccept'])){
         session_start();
         if(isset($_SESSION['kor_id'])){
@@ -771,6 +938,168 @@
                 $stmt -> execute();
             break;
         }
+    }
+
+    if(isset($_GET['passReset'])){
+        if(isset($_POST['email']) && preg_match("/^\S+@\S+\.\S+$/", "ivuk@foi.hr")==true){
+            $lozinka = strtoupper(dechex(random_int(0, 16777215)));
+                $to = $_POST['email'];
+                $subject = 'POŠTE Aktivacijski link';
+                $message = '
+                <html>
+                <head>
+                    <title>Aktivacijski link</title>
+                    <style>
+                    body{
+                        font-family: Nunito, Roboto, Segoe UI;
+                        font-size: 22px;
+                        width: 100%;
+                        height: 500px;
+                        background-color: #707070;
+                        overflow: hidden;
+                    }
+
+                    .wrapper{
+                        position: absolute;
+                        left: 50%;
+                        top: 0;
+                        transform: translateX(-50%);
+                        background-color: #FFF;
+                        height: 100%;
+                        width: 600px;
+                    }
+
+                    main{
+                        width: 80%;
+                        position: absolute;
+                        top: 70px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        padding: 15px;
+                    }
+                    
+                    .header{
+                        width: 600px;
+                        height: 85px;
+                        border: solid 1px #707070;
+                        background-color: #232323;
+                    }
+
+                    .headerText{
+                        position: relative;
+                        bottom: 7px;
+                        font-size: 30px;
+                        color: #f1cd7b;
+                        display: block;
+                        text-align: center;
+                    }
+
+                    .headerFigure{
+                        display: block;
+                        margin: auto;
+                        width: 83px;
+                        object-fit: contain;
+                        position: relative;
+                        top: 5px;
+                    }
+
+                    .headerImage{
+                        width: 100%;
+                    }
+
+                    .boldedText{
+                        font-weight: bold;
+                    }
+                    
+                    a{
+                        text-decoration: none;
+                        color: green;
+                    }
+                    
+                    a:hover{
+                        text-decoration: underline;
+                        cursor: pointer;
+                    }
+                    
+                    .codeWrapper{
+                      position: absolute;
+                      left: 50%;
+                      transform: translateX(-50%);
+                    }
+                    
+                    .digit{
+                      display: block;
+                      height: 45px;
+                      width: 240px;
+                      background-color: #AFAFAF;
+                      border: 1px solid #707070;
+                      border-radius: 4px;
+                      font-size: 40px;
+                      line-height: 45px;
+                      text-align: center;
+                      vertical-align: middle;
+                    }
+                    
+                    .digit:last-child{
+                      margin-right: 0;
+                    }
+
+                    </style>
+                </head>
+                <body>
+                    <div class="wrapper">
+                    <header class="header">
+                    <figure class="headerFigure"><a href="index.php"><img src="http://barka.foi.hr/WebDiP/2019_projekti/WebDiP2019x144/multimedija/post-icon.png" class="headerImage"></a></figure>
+                    <span class="headerText">POŠTE</span>
+                    </header>
+                    <main>
+                    <p class="boldedText">Poštovani '.$_POST['email'].', </p>
+                    <p>
+                        Nedavno ste zatražili ponovno postavljanje lozinke.
+                    </p>
+                    <p>
+                        Vaša privremena šifra je: 
+                    </p>
+                    
+                    <div class="codeWrapper">
+                      <span class="digit">'.($lozinka).'</span>
+                    </div>
+                   
+                    </main>
+                    </div>
+
+                    </body>
+                </html>
+                ';
+                        
+                $headers[] = 'MIME-Version: 1.0';
+                $headers[] = 'Content-type: text/html; charset=iso-8859-1';
+                $headers[] = 'From: Poste@foi.hr' . "\r\n" .
+                    'Reply-To: Poste@foi.hr' . "\r\n";
+
+                
+                mail($to, $subject, $message, implode("\r\n", $headers));
+            echo json_encode($lozinka);
+
+            require("baza.class.php"); 
+            $baza = new Baza;
+            $veza = $baza -> spojiDB();
+            $upit ="UPDATE korisnik SET id_status = 4 AND codeZaReset = ? WHERE email = ?";
+            $stmt = $veza -> prepare ($upit);
+            if($stmt == null){
+                echo json_encode('Neuspjeh');
+            }
+            else{
+                $stmt -> bind_param("ss", $lozinka, $_POST['email']);
+                $stmt -> execute();
+        }
+        else{
+            echo json_encode("not okej");
+        }
+    }
+
+    if(isset($_GET['setPassword'])){
+
     }
 
 ?>

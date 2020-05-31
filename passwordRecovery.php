@@ -36,17 +36,19 @@
         
         <div class="footerWrapper">
 		<main>
-            <div id="wrapper" class="rotateIn">
+            <div id="wrapper" class="rotateIn passResetWrapper" style="width: 80%;">
                 <h1 class="heading">Zaboravljena lozinka</h1>
-                <form action="http://barka.foi.hr/WebDiP/2019/materijali/zadace/ispis_forme.php" method="GET">
-                    <div class = "textbox" id="e_mailTextBox">
-                        <label for="e_mail">E-mail</label>
-                        <input type = "email" name = "e_mail" id="e_mail" class="text"><br>
-                    </div>
-                   <div class="buttonWrapper">
-                        <input id="submitBtn" type = "submit" value = "Submit" class="submit"><br>
-                    </div>
-                </form>
+                <div class = "textbox" id="e_mailTextBox">
+                    <label for="email">E-mail</label>
+                    <input type = "email" name = "email" id="email" class="text"><br>
+                </div>
+                <div class = "textbox" id="passTextBox" style="display: none;">
+                    <label for="code" id="codeLabel">Code</label>
+                    <input type = "code" name = "code" id="code" class="text"><br>
+                </div>
+                <div class="buttonWrapper">
+                    <input id="posaljiLozinku" type = "submit" value = "Pošalji" class="submit"><br>
+                </div>
             </div>
         </main>  
 
@@ -54,6 +56,7 @@
             require('komponente/podnozje.php');
         ?>
         </div>
+        <div id="snackbar"></div>
     </body>
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="javascript/ivuk.js"></script>

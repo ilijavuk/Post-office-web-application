@@ -1,42 +1,60 @@
 $(()=>{
     const emailRegex = new RegExp("^\\S+@\\S+\\.\\S+$");
     let stranicenje = 7;
+    if($("table")[0] != undefined){
+        $.extend( true, $.fn.dataTable.defaults, {
+            "pageLength": stranicenje,
+            responsive: true,
+            "dom": 'f<"top">rt<"bottom"p><"clear">',
+            "language": {
+                "emptyTable": "Tablica je trenutno prazna",
+                "sZeroRecords": "Traženi pojam ne postoji",
+                search: "Pretraživanje:"
+            }
+        } );
+        $("table").css('width','100%');
+        $.ajax({
+            url: "api.php?fetch_stranicenje",
+            dataType: 'json'
+        }).done(function(data) {
+            stranicenje = data;
+            $('table').DataTable().page.len(stranicenje).draw();
+        });
+    }    
     
-    $.extend( true, $.fn.dataTable.defaults, {
-        "pageLength": stranicenje,
-        responsive: true,
-        "dom": 'f<"top">rt<"bottom"p><"clear">',
-        "language": {
-            "emptyTable": "Tablica je trenutno prazna",
-            "sZeroRecords": "Traženi pojam ne postoji"
-        }
-    } );
-
-    $.ajax({
-        url: "api.php?fetch_stranicenje",
-        dataType: 'json'
-    }).done(function(data) {
-        stranicenje = data;
-        $('table').DataTable().page.len(stranicenje).draw();
-    });
 
     var kolacic = document.cookie.split("; ");
     let prihvatioUvjete = false;
+    
+    $.ajax({
+        url: "api.php?fetch_tema",
+        dataType: 'json',
+        data: {fetchNightMode: 1}
+    }).done(function(data) {
+        $("body").css('background-color',`${data['pozadina']}`);
+        $("body").css('color', `${data['bojaFonta']}`);
+        
+        for(var i = 0; i < kolacic.length; i++){
+            var naziv = kolacic[i].split("=")[0];
+            var vrijednost = kolacic[i].split("=")[1];
+            if(naziv == 'nocniNacinRada'){
+                if(vrijednost === "true"){
+                    $("body").css('background-color','#121212');
+                    $("body").css('color','rgba(255, 255, 255, 0.6)');
+                }
+                else if(vrijednost === "false"){
+                    $("body").css('background-color','');
+                    $("body").css('color','');
+                }
+            }
+        } 
+    });
+    
     for(var i = 0; i < kolacic.length; i++){
         var naziv = kolacic[i].split("=")[0];
         var vrijednost = kolacic[i].split("=")[1];
         if(naziv == 'uvjetiKoristenja' && vrijednost == '1'){
             prihvatioUvjete = true;
-        }
-        if(naziv == 'nocniNacinRada'){
-            if(vrijednost === "true"){
-                $("body").css('background-color','#121212');
-                $("body").css('color','rgba(255, 255, 255, 0.6)');
-            }
-            else if(vrijednost === "false"){
-                $("body").css('background-color','');
-                $("body").css('color','');
-            }
         }
     } 
     
@@ -85,7 +103,10 @@ $(()=>{
         }
     });
 
-    if(window.location.href.includes("login")){
+    if(window.location.href.includes("login")){ 
+        if(window.location.href.startsWith("http://")){
+            window.location.href = "https"+window.location.href.substr(4);
+        }
         for(var i = 0; i < kolacic.length; i++){
             var naziv = kolacic[i].split("=")[0];
             var vrijednost = kolacic[i].split("=")[1]
@@ -187,7 +208,8 @@ $(()=>{
         function prikaziOdgovor(odgovor){
             switch(odgovor){
                 case "1": location.href='index.php';break;
-                case "Z":  $("#snackbar").html('Zaključani ste!');break;
+                case "Z": $("#snackbar").html('Zaključani ste!');break;
+                case "V": $("#snackbar").html("Vaš račun nije aktiviran! Aktivacijska poruka Vas čeka u vašoj e-pošti");break;
                 default: $("#snackbar").html('Prijava nije uspjela');break;
             }
             showSnackbar();
@@ -258,7 +280,7 @@ $(()=>{
                     url: "api.php?insert_korisnik",
                     data:{ime: $("#ime").val(), prezime: $("#prezime").val(), korisnicko_ime: $("#korisnicko_ime").val(), email: $("#email").val(), lozinka: $("#lozinka").val() }
                 }).done(function(data) {
-                    if(JSON.parse(data)=="uspjeh"){
+                    if(data=="Uspjeh"){
                         window.location.href="login.php";
                     }
                 });
@@ -276,6 +298,7 @@ $(()=>{
             url: "api.php?fetch_postanskiUred",
         }).done(function(data) {
             poljeSPodatcima = (data);
+            console.log(poljeSPodatcima);
         });
 
         $("#search").on('input', ()=>{
@@ -951,64 +974,13 @@ $(()=>{
                     $brojPlacenih = ($(this).children()[2].innerHTML);
                     $(podatci).each(function(){
                         if($(this)[0] == $vrijednost){
-                            poljePodatakaZaGraf.push(new Array(parseInt($brojPoslanih), `PP - ${$(this)[1]}`));
-                            poljePodatakaZaGraf.push(new Array(parseInt($brojPlacenih), `BP - ${$(this)[1]}`));
+                            poljePodatakaZaGraf.push(new Array(`PP - ${$(this)[1]}`, parseInt($brojPoslanih)));
+                            poljePodatakaZaGraf.push(new Array(`BP - ${$(this)[1]}`, parseInt($brojPlacenih)));
                         }
                     })
                 }
             })
             drawCanvas(poljePodatakaZaGraf);
-        }
-
-        function drawCanvas(values){
-            
-            if($("#canvas")[0] != undefined){
-                let canvas = $("#canvas")[0];
-                canvasContext = canvas.getContext("2d");
-                canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-        
-                let drawOn = 40;
-                let height = canvas.height;
-                let heightPadding = 40;
-                let width = canvas.width;
-                let columnWidth = (width-drawOn-20*values.length)/values.length;
-
-                let mjernaJedinica = values[0][0];
-                for(var i = 0; i < values.length; i++){
-                    if(values[i][0] > mjernaJedinica){
-                        mjernaJedinica = values[i][0]
-                    }
-                }
-                mjernaJedinica = (height-50-heightPadding)/mjernaJedinica;
-                canvasContext.fillRect(0, height-heightPadding, width, 3);
-                canvasContext.fillRect(20, 0, 3, height-heightPadding);
-                let verticalLine = height - heightPadding;
-                let verticalValue = 0;
-                canvasContext.fillStyle = "#707070"
-                canvasContext.font = "16px Segoe UI";
-                while(verticalLine > 0){
-                    if(verticalValue%2==0 && verticalValue != 0){
-                        canvasContext.fillRect(20, verticalLine, width-10, 1);
-                        canvasContext.fillStyle = "#000000"
-                        canvasContext.fillText(verticalValue, 10-canvasContext.measureText(verticalValue).width/2, verticalLine+8);
-                    }
-                    verticalLine -= mjernaJedinica;
-                    verticalValue += 1;
-                }
-                
-
-
-                for(var i = 0; i < values.length; i++){
-                    canvasContext.fillStyle = ("#"+(Math.floor( Math.random() * parseInt('0xFFFFFF') )+1).toString(16)); 
-                    canvasContext.fillRect(drawOn, height-heightPadding, columnWidth, -1*values[i][0]*mjernaJedinica);
-                    canvasContext.fillStyle = "#000000"
-                    canvasContext.font = "24px Segoe UI";
-                    canvasContext.fillText(values[i][0], drawOn+(columnWidth)/2-canvasContext.measureText(values[i][0]).width/2, height-values[i][0]*mjernaJedinica-15-heightPadding);
-                    canvasContext.font = "16px Segoe UI";
-                    canvasContext.fillText(values[i][1], drawOn+(columnWidth)/2-canvasContext.measureText(values[i][1]).width/2, height-heightPadding/2+8);
-                    drawOn += columnWidth+20;
-                }
-            }
         }
 
         function closeModal(){
@@ -1018,9 +990,82 @@ $(()=>{
         }
     } 
     
+    function drawCanvas(values){
+        if($("#canvas")[0] != undefined){
+            let canvas = $("#canvas")[0];
+            canvasContext = canvas.getContext("2d");
+            canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    
+            let leftMargin = 30;
+            let drawOn = leftMargin+20;
+            let height = canvas.height;
+            let heightPadding = 40;
+            let width = canvas.width;
+            let columnWidth = (width-drawOn-20*values.length)/values.length;
+            let mjernaJedinica = values[0][1];
+            for(var i = 0; i < values.length; i++){
+                if(values[i][1] > mjernaJedinica){
+                    mjernaJedinica = values[i][1]
+                }
+            }
+
+            if(mjernaJedinica < 20){
+                linijeSvakihN = 2;
+            }
+            if(mjernaJedinica < 100){
+                linijeSvakihN = 5;
+            }
+            if(mjernaJedinica < 200){
+                linijeSvakihN = 10;
+            }
+            if(mjernaJedinica < 400){
+                linijeSvakihN = 20;
+            }
+            else{
+                linijeSvakihN = 30;
+            }
+
+            mjernaJedinica = (height-50-heightPadding)/mjernaJedinica;
+            canvasContext.fillRect(0, height-heightPadding, width, 3);
+            canvasContext.fillRect(leftMargin, 0, 3, height-heightPadding);
+            let verticalLine = height - heightPadding;
+            let verticalValue = 0;
+            canvasContext.fillStyle = "#707070"
+            canvasContext.font = "16px Segoe UI";
+
+            while(verticalLine > 0){
+                if(verticalValue%linijeSvakihN==0 && verticalValue != 0){
+                    canvasContext.fillRect(leftMargin, verticalLine, width-leftMargin/2, 1);
+                    canvasContext.fillStyle = "#000000"
+                    canvasContext.fillText(verticalValue, leftMargin/2-canvasContext.measureText(verticalValue).width/2, verticalLine+8);
+                }
+                verticalLine -= mjernaJedinica;
+                verticalValue += 1;
+            }
+
+            for(var i = 0; i < values.length; i++){
+                canvasContext.fillStyle = ("#"+(Math.floor( Math.random() * parseInt('0xFFFFFF') )+1).toString(16)); 
+                canvasContext.fillRect(drawOn, height-heightPadding, columnWidth, -1*values[i][1]*mjernaJedinica);
+                canvasContext.fillStyle = "#000000"
+                canvasContext.font = "24px Segoe UI";
+                canvasContext.fillText(values[i][1], drawOn+(columnWidth)/2-canvasContext.measureText(values[i][1]).width/2, height-values[i][1]*mjernaJedinica-15-heightPadding);
+                canvasContext.font = "16px Segoe UI";
+                canvasContext.fillText(values[i][0], drawOn+(columnWidth)/2-canvasContext.measureText(values[i][0]).width/2, height-heightPadding/2+8);
+                drawOn += columnWidth+20;
+            }
+        }
+    }
+
     if(window.location.href.includes('postavke')){
+        if($("#print")){
+            $("#print").click(function(){
+                window.print();
+                
+            })
+        }
+
         if($("#dnevnikTable"))
-        $('#dnevnikTable').DataTable({
+        var table = $('#dnevnikTable').DataTable({
             "pageLength": stranicenje,
             responsive: true,
             "dom": 'f<"top">rt<"bottom"p><"clear">',
@@ -1028,6 +1073,16 @@ $(()=>{
                 "emptyTable": "Dnevnik rada je trenutno prazan",
                 "sZeroRecords": "Ne postoje radnje s traženim pojmom"
             }
+        });
+        $.ajax({
+            url: "api.php?fetch_tema",
+            dataType: 'json'
+        }).done(function(data) {
+            $("#selectTemu").children().each(function(){
+                if($(this).html() == data['naziv']){
+                    $(this).prop('selected', true);
+                }
+            })
         });
 
         let poljeSPodatcima = $("#dnevnikTbody").children();
@@ -1068,50 +1123,156 @@ $(()=>{
             }
         }
 
-        $(".odblokiraj").click(function(){
-            odblokirajFunc($(this))
+        getDnevnikForCanvas();
+        
+        function getDnevnikForCanvas(){
+            poljeSPodatcima = table.rows( { search: 'applied' } ).data();
+            
+            polje = [];
+
+            $(poljeSPodatcima).each(function(){
+                radnja = $(this)[1];
+                let found = false;
+                polje.forEach( (element, index) => {
+                    if(element[0] == radnja){
+                        element[1] = element[1]+1;
+                        found = true;
+                    }
+                })
+                if(!found){
+                    polje.push([radnja, 1]);
+                }
+            })
+            drawCanvas(polje);
+            $("#dnevnikStatistikaTBody").empty();
+            $(polje).each(function(){
+                $("#dnevnikStatistikaTBody").append(`
+                <tr>
+                    <td>${$(this)[0]}</td>
+                    <td>${$(this)[1]}</td>
+                </tr>`);
+            })
+        }
+
+        $('#dnevnikTable_filter input').on('input', ()=>{
+            getDnevnikForCanvas();            
+        }); 
+        
+        function obradiPodatkeZaCanvas(){
+            let poljePodatakaZaGraf = [];
+            poljeSPodatcima = table.data();
+            poljeSPodatcima.each(function(){
+                console.log($(this)[2]);
+            })
+
+            poljeSPodatcima.each(function(){
+                $(this).each(function(){
+                    console.log($(this));
+                })
+            })
+            
+            
+            $("#statistikaTbody").children().each(function(){
+                $vrijednost = ($(this).children()[0].innerHTML);
+                if(!$vrijednost.includes("nema postojećih pošiljki")){
+                    $brojPoslanih = ($(this).children()[1].innerHTML);
+                    $brojPlacenih = ($(this).children()[2].innerHTML);
+                    $(podatci).each(function(){
+                        if($(this)[0] == $vrijednost){
+                            poljePodatakaZaGraf.push(new Array(`PP - ${$(this)[1]}`, parseInt($brojPoslanih)));
+                            poljePodatakaZaGraf.push(new Array(`BP - ${$(this)[1]}`, parseInt($brojPlacenih)));
+                        }
+                    })
+                }
+            })
+            drawCanvas(poljePodatakaZaGraf);
+            
+        }
+
+        $(".korisnikRed").click(function(){
+            showModalKorisnikInfo($(this));
         })
 
-        $(".blokiraj").click(function(){
-           blokirajFunc($(this));
-        })
+        function showModalKorisnikInfo($red){
+            $("#overlay").fadeIn( 500 );
+            $(".modal").fadeIn( 500 );
+            $("#korisnikInfo").fadeIn( 1000 );
+            //
+            $("#id_korisnik").val($red.children()[0].innerHTML);
+            $ime = $red.children()[1].innerHTML.split(" ")
+            $("#ime_korisnika").val($ime[0]);
+            $("#prezime_korisnika").val($ime[1]);
+            $("#korisnicko_ime").val($ime[2]);
+            $("#email").val($red.children()[3].innerHTML[3]);
+            if($red.children()[2].innerHTML == "Aktivan"){
+                $("#blokiraj").val("Blokiraj");
+                $("#blokiraj").click(function(){
+                    blokirajFunc($(this));
+                    $($red.children()[2]).html('Blokiran');
+                    $('.modal').hide();
+                    $('#overlay').hide();
+                })
+            }
+            else{
+                $("#blokiraj").val("Odblokiraj");
+                $("#blokiraj").click(function(){
+                    odblokirajFunc();
+                    $($red.children()[2]).html('Aktivan');   
+                    $('.modal').hide();
+                    $('#overlay').hide();
+                })
+            }
+        }        
 
-        function odblokirajFunc($red){
+        function blokirajFunc(){
+            $.ajax({
+                method: "POST",
+                url: "api.php?update_korisnikBlock",
+                data: {korisnik_id: $("#id_korisnik").val() },
+            }).done(function(data) {
+                console.log(data);
+                $("#snackbar").html('Korisnik uspješno blokiran');
+                showSnackbar();
+            });
+        }
+
+        function odblokirajFunc(){
             $.ajax({
                 method: "POST",
                 dataType: "json",
                 url: "api.php?update_korisnikUnblock",
-                data: {korisnik_id: $red.children()[0].innerHTML },
+                data: {korisnik_id: $("#id_korisnik").val() },
             }).done(function(data) {
-                $($red.children()[2]).html('Blokiraj');
-                $($red).removeClass('odblokiraj');   
-                $($red).addClass('blokiraj');     
-                $red.unbind();
-                $red.click(function(){
-                    blokirajFunc($(this));
-                 })        
                 $("#snackbar").html('Korisnik uspješno odblokiran');
                 showSnackbar();
             });
         }
 
-        function blokirajFunc($red){
+        $("#dodijeliModeratora").click(function(){
             $.ajax({
                 method: "POST",
+                dataType: 'json',
                 url: "api.php?update_korisnikBlock",
-                data: {korisnik_id: $red.children()[0].innerHTML },
+                data: {korisnik_id: $("#id_korisnik").val() },
             }).done(function(data) {
-                $($red.children()[2]).html('Odblokiraj');
-                $($red).removeClass('blokiraj');   
-                $($red).addClass('odblokiraj'); 
-                $red.unbind();
-                $red.click(function(){
-                    odblokirajFunc($(this));
-                 })           
-                $("#snackbar").html('Korisnik uspješno blokiran');
+                console.log(data);
+                if(data == "Uspjeh"){
+                    $("#snackbar").html('Korisnik je sada moderator');
+                }
+                else if(data == "Neuspjeh"){
+                    $("#snackbar").html('Korisnik je već moderator');
+                }
+                else{
+                    $("#snackbar").html('Došlo je do pogreške');
+                }
                 showSnackbar();
             });
-        }
+        })
+
+        $("#overlay").click(()=>{
+            $('.modal').hide();
+            $('#overlay').hide();
+        })
         
         $("#resetirajUvjeteBtn").click(function(){
             $.ajax({
@@ -1247,7 +1408,7 @@ $(()=>{
                 data: { tema: $("#selectTemu").val() },
             }).done(function(data){
                 if(data == 'Uspjeh'){
-                    $("#snackbar").html('Tema uspješno postavljen');
+                    $("#snackbar").html('Tema uspješno postavljena');
                     showSnackbar();
                 }
                 else{
@@ -1255,6 +1416,11 @@ $(()=>{
                     showSnackbar();
                 }
             })
+        })
+
+        $("#postaviFont").click(function(){
+            $("*").css('font-family',`${$("#font").val()}`)
+            console.log($("#font").val());
         })
 
         $(".dnevnikRedak").click(function(){
@@ -1320,6 +1486,67 @@ $(()=>{
             }
             return copy;
         }
+    }
+
+    if(window.location.href.includes('passwordRecovery')){
+        $("#posaljiLozinku").click(function(){
+            if(emailRegex.test($("#email").val()) == false){
+                $("#email").css('outline', 'solid 1px red');
+                $("#snackbar").html('Format emaila je tekst@domena.domena');
+                showSnackbar();
+            }
+            else{
+                $("#email").css('outline', 'none');
+                $.ajax({
+                    method: 'POST',
+                    url: 'api.php?passReset',
+                    dataType: 'json',
+                    data: {email: $("#email").val() }
+                }).done(function(data){
+                    console.log(data);
+                    $("#e_mailTextBox").fadeOut( 500, function(){
+                        $("#passTextBox").fadeIn( 500 );
+                        let counter = 2;
+                        $("#posaljiLozinku").unbind();
+                        $("#posaljiLozinku").click(function(){
+                            if($("#code").val() == data){
+                                $("#snackbar").html("Uneseni kod je ispravan!");
+                                showSnackbar();
+                                $("#passTextBox").fadeOut( 500, function(){
+                                    $("#passTextBox").fadeIn( 500 );
+                                    $("#codeLabel").html('Nova lozinka');
+                                    $("#posaljiLozinku").unbind();
+                                    $("#posaljiLozinku").html("Postavi");
+                                    $("#posaljiLozinku").click(function(){
+                                        $.ajax({
+                                            method: 'POST',
+                                            url: 'api.php?setPassword',
+                                            data: { lozinka: $("#code").val(), email: $("#email").val() }
+                                        }).done(function(){
+                                            
+                                        })
+                                    })
+                                } );
+                            }
+                            else{
+                                $("#snackbar").html(`Imate još ${counter} pokušaja`);
+                                if(!counter)
+                                $("#snackbar").html('Potrošili ste sve pokušaje, preusmjeravamo Vas');
+                                counter--;
+                                showSnackbar();
+                            }
+                            if(counter == 0){
+                                setTimeout(function(){ location.href='index.php' }, 2000);
+                            }
+                        })
+                        }
+                    )
+                })
+                
+            }
+        })
+        
+        
     }
 
     function showSnackbar() {

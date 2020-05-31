@@ -305,7 +305,7 @@ tbody{
 
 table{
     font-size: 22px;
-    width: 100%;
+    width: 100%! important;
     max-width: 100%;
 }
 
@@ -492,6 +492,38 @@ th:hover,thead{
     display: none;
 }
 
+.textbox.inlineWithBtn{
+    margin-top: 15px;
+}
+
+.postavkeModalBtnWrapper{
+    width: 100%; 
+    display: grid; 
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 1fr; 
+    gap: 15px;
+}
+
+#print{
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    line-height: 40px;;
+    font-size: 40px;
+    border: 1px solid #707070;
+    color: #000;
+    padding: 5px;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+#print:hover{
+    cursor: pointer;
+    border: solid 1px #ffffff;
+    color: #FFF;
+    background-color: #AFAFAF;
+}
+
 @keyframes slide-in {
     100% { transform: translateX(0%); }
 }
@@ -542,6 +574,15 @@ th:hover,thead{
     /* Postavke tablet */    
     .listaKorisnik_ID{
         display: table-cell;
+    }
+
+    .postavkeModalBtnWrapper{
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr; 
+    }
+
+    #azuriraj{
+        grid-column: 1 / span 2;
     }
 
     /* Statistika tablet */       
@@ -672,6 +713,7 @@ th:hover,thead{
     .textbox.inlineWithBtn{
         display: inline-block;
         width: calc( 100% - 265px );
+        margin-top: 0;
     }
     
     .inlineBtn{
@@ -688,6 +730,12 @@ th:hover,thead{
     /* Statistika desktop */       
     #canvas{
         width: 40%;
+    }
+
+    /* Reset pass */    
+    .passResetWrapper{
+        width: 60%!important;
+        margin: 0 auto;
     }
 
     @keyframes showing-right {
