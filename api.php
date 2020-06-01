@@ -800,10 +800,10 @@
         $baza = new Baza;
         $baza -> spojiDB();
         if(isset($_POST['fetchNightMode'])){
-            $upit = "SELECT pozadina, bojaFonta, velicinaFonta FROM tema WHERE naziv = 'Dark';";
+            $upit = "SELECT * FROM tema WHERE naziv = 'Dark';";
         }
         else{
-            $upit = "SELECT naziv FROM tema INNER JOIN postavke ON postavke.tema=tema.tema_id;";
+            $upit = "SELECT * FROM tema INNER JOIN postavke ON postavke.tema=tema.tema_id;";
         }
         $rezultat = $baza -> SelectDB($upit);
 
@@ -1079,27 +1079,70 @@
 
                 
                 mail($to, $subject, $message, implode("\r\n", $headers));
-            echo json_encode($lozinka);
 
             require("baza.class.php"); 
             $baza = new Baza;
             $veza = $baza -> spojiDB();
-            $upit ="UPDATE korisnik SET id_status = 4 AND codeZaReset = ? WHERE email = ?";
+            $upit ="UPDATE korisnik SET id_status='4', codeZaReset = ? WHERE email = ?";
+            $stmt = $veza -> prepare ($upit);
+            if($stmt == null){
+                echo json_encode("Neuspjeh");
+            }
+            else{
+                $stmt -> bind_param("ss", $lozinka, $_POST['email']);
+                if(!$stmt -> execute()){
+                    echo json_encode($stmt->errno);
+                }
+                echo json_encode($lozinka);
+            }
+        }
+        else{
+            echo json_encode("Neuspjeh");
+        }
+    }
+
+    if(isset($_GET['setPassword'])){
+        if(isset($_POST['lozinka']) && isset($_POST['email']) && isset($_POST['code'])){
+            require("baza.class.php"); 
+            $baza = new Baza;
+            $veza = $baza -> spojiDB();
+            $upit ="SELECT codeZaReset FROM korisnik WHERE codeZaReset=? AND id_status='4' AND email = ?";
             $stmt = $veza -> prepare ($upit);
             if($stmt == null){
                 echo json_encode('Neuspjeh');
             }
             else{
-                $stmt -> bind_param("ss", $lozinka, $_POST['email']);
+                $stmt -> bind_param("ss", $_POST['code'], $_POST['email']);
                 $stmt -> execute();
+                
+                $rezultat = $stmt->get_result();
+                if($rezultat->num_rows == 0){
+                    echo json_encode("Taj korisnik nije pronađen");
+                    echo json_encode($_POST['code'],$_POSt['email']);
+                    die;
+                }
+                else if($rezultat->num_rows > 0){
+                    $upit ="UPDATE korisnik SET codeZaReset=NULL, id_status='2', lozinka=?, lozinka_sha1=? WHERE email = ?";
+                    $stmt = $veza -> prepare ($upit);
+                    if($stmt == null){
+                        echo json_encode('Neuspjeh');
+                    }
+                    $lozinka_sha1 = sha1($_POST['lozinka']);
+                    $stmt -> bind_param("sss", $_POST['lozinka'], $lozinka_sha1, $_POST['email']);
+                    $stmt -> execute();
+                    $rezultat = $stmt->get_result();
+                    if($stmt->affected_rows == 0){
+                        echo json_encode("Neuspjeh");
+                    }
+                    else{
+                        echo json_encode("Uspjeh");
+                    }
+                }
+            }
         }
         else{
-            echo json_encode("not okej");
+            echo json_encode('Nisu svi podatci postavljeni!');
         }
-    }
-
-    if(isset($_GET['setPassword'])){
-
     }
 
 ?>

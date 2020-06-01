@@ -21,33 +21,40 @@ $(()=>{
             $('table').DataTable().page.len(stranicenje).draw();
         });
     }    
-    
 
     var kolacic = document.cookie.split("; ");
     let prihvatioUvjete = false;
     
+   
+        
     $.ajax({
         url: "api.php?fetch_tema",
-        dataType: 'json',
-        data: {fetchNightMode: 1}
+        method: 'POST',
+        dataType: 'json'
     }).done(function(data) {
-        $("body").css('background-color',`${data['pozadina']}`);
-        $("body").css('color', `${data['bojaFonta']}`);
-        
+        let set = 0;
         for(var i = 0; i < kolacic.length; i++){
             var naziv = kolacic[i].split("=")[0];
             var vrijednost = kolacic[i].split("=")[1];
-            if(naziv == 'nocniNacinRada'){
-                if(vrijednost === "true"){
-                    $("body").css('background-color','#121212');
-                    $("body").css('color','rgba(255, 255, 255, 0.6)');
-                }
-                else if(vrijednost === "false"){
-                    $("body").css('background-color','');
-                    $("body").css('color','');
-                }
+            if(vrijednost == "0"){
+                vrijednost = "";
+            }
+            switch(naziv){
+                case 'body background-color': $("body").css('background-color',`${vrijednost}`); set=1;break;
+                case 'body color': $("body").css('color',`${vrijednost}`); set=1;break;
+                case 'tr background-color': $("tr").css('background-color',`${vrijednost}`); set=1;break;
+                case 'table color': $("table").css('color',`${vrijednost}`); set=1;break;
+                case 'tr color': $("tr").css('color',`${vrijednost}`); set=1;break;
             }
         } 
+
+        if(!set){
+            $("body").css('background-color',`${data['pozadina']}`);
+            $("body").css('color', `${data['bojaFonta']}`);
+            $("tr").css('background-color', `${data['pozadinaTablica']}`)
+            $("table").css('color', `${data['tekstTablica']}`)
+            $("tr").css('color', `${data['tekstTablica']}`)
+        }
     });
     
     for(var i = 0; i < kolacic.length; i++){
@@ -197,12 +204,17 @@ $(()=>{
         function postaviZadnjegKorisnika(zadnjiKorisnik){
             document.cookie = zadnjiKorisnik + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
             
-            if($("#zapamtiMe").prop('checked')){
-                document.cookie = `zadnjiKorisnik=${zadnjiKorisnik};path=/`;
-            }  
-            else{
-                document.cookie = `zadnjiKorisnik=;path=/`;
-            }
+            $.ajax({
+                url: "api.php?fetch_trajanjeKolacica",
+                dataType: 'json'
+            }).done(function(data) {
+                if($("#zapamtiMe").prop('checked')){
+                    document.cookie = `zadnjiKorisnik=${zadnjiKorisnik};path=/;Max-Age=${data}`;
+                }  
+                else{
+                    document.cookie = `zadnjiKorisnik=;path=/;Max-Age=${data}`;
+                }
+            })
         }
 
         function prikaziOdgovor(odgovor){
@@ -298,7 +310,6 @@ $(()=>{
             url: "api.php?fetch_postanskiUred",
         }).done(function(data) {
             poljeSPodatcima = (data);
-            console.log(poljeSPodatcima);
         });
 
         $("#search").on('input', ()=>{
@@ -425,23 +436,31 @@ $(()=>{
         $vrijednost = $("#select").on('change', function(){
             var zadnji = document.getElementsByTagName("tbody")[0].lastElementChild;
             $("tbody").empty();
-            $htmlObject = $(poljeSPodatcima);
-            $val = $vrijednost.val();
-            $array = $($htmlObject).children();
-            $count = 0;
-            $array.each(item => {
-                $item = $array[item];
-                if($($item).children()[3].innerHTML == $val || $val == "-1"){
-                    $("tbody").append($item);
-                    $count++;
+            let count = 0;
+            poljeSPodatcima.forEach(element => {
+                if(element['id_drzave'] == $("#select").val() || $("#select").val() == -1){
+                    count++;
+                    broj_posiljki = (element['broj_posiljki'] == '' ? 0 : element['broj_posiljki']);
+                    red = 
+                    `<tr>
+                        <td>${element['naziv']}</td>
+                        <td>${element['adresa']}</td>
+                        <td>${element['postanskiBroj']}</td>
+                        <td style="display: none;">${element['id_drzave']}</td>
+                        <td>${element['broj_poslanih']}</td>
+                        <td>${element['broj_primljenih']}</td>
+                        <td style="display: none;">${element['postanskiUred_id']}</td>
+                    </tr>`;
+                    $("#statistikUredTBody").append(red);
                 }
             });
-
-            if($count == 0){
-                $("tbody").append("<tr height=30 style='font-size: 28px;'><td colspan=5>Poštanski uredi za odabranu državu trenutno ne postoje.</td></tr>")
+             
+            if(count == 0){
+                $("#statistikUredTBody").append("<tr height=30 style='font-size: 28px;'><td colspan=7>Za odabrano razdoblje u njegovim poštanskim uredima nije bilo pošiljki</td></tr>")
             }
+
             if(zadnji != null && zadnji.id == 'elementZaDodavanje'){
-                $("tbody").append(zadnji);
+                $("#statistikUredTBody").append(zadnji);
             }
         });
 
@@ -1290,16 +1309,49 @@ $(()=>{
         })
 
         $("#nocniNacinRada").click(function(){
-            document.cookie = nocniNacinRada + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-            document.cookie = `nocniNacinRada=${$("#nocniNacinRada").prop('checked')};path=/`;
-            if($("#nocniNacinRada").prop('checked')){
-                $("body").css('background-color','#121212');
-                $("body").css('color','rgba(255, 255, 255, 0.6)');
-            }
-            else{
-                $("body").css('background-color','');
-                $("body").css('color','');
-            }
+            $.ajax({
+                url: "api.php?fetch_trajanjeKolacica",
+                dataType: 'json'
+            }).done(function(data) {
+                let maxAge = data;
+                document.cookie = nocniNacinRada + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+                document.cookie = `nocniNacinRada=${$("#nocniNacinRada").prop('checked')};path=/;Max-Age=${maxAge}`;
+                if($("#nocniNacinRada").prop('checked')){
+                    $.ajax({
+                        url: "api.php?fetch_tema",
+                        method: 'POST',
+                        dataType: 'json',
+                        data: {fetchNightMode: 1}
+                    }).done(function(data) {
+                        $("body").css('background-color',`${data['pozadina']}`);
+                        $("body").css('color', `${data['bojaFonta']}`);
+                        $("tr").css('background-color', `${data['pozadinaTablica']}`)
+                        $("table").css('color', `${data['tekstTablica']}`)
+                        $("tr").css('color', `${data['tekstTablica']}`)
+                        
+                        
+                        document.cookie = `body background-color=${data['pozadina']};path=/;Max-Age=${maxAge}`;
+                        document.cookie = `body color=${data['bojaFonta']};path=/;Max-Age=${maxAge}`;
+                        document.cookie = `tr background-color=${data['pozadinaTablica']};path=/;Max-Age=${maxAge}`;
+                        document.cookie = `table color=${data['tekstTablica']};path=/;Max-Age=${maxAge}`;
+                        document.cookie = `tr color=${data['tekstTablica']};path=/;Max-Age=${maxAge}`;
+                
+                    });
+                }
+                else{
+                    $("body").css('background-color','');
+                    $("body").css('color','');
+                    $("tr").css('background-color', ``)
+                    $("table").css('color', ``)
+                    $("tr").css('color', ``)
+
+                    document.cookie = `body background-color="0";path=/;Max-Age=${maxAge}`;
+                    document.cookie = `body color="0";path=/;Max-Age=${maxAge}`;
+                    document.cookie = `tr background-color="0";path=/;Max-Age=${maxAge}`;
+                    document.cookie = `table color="0";path=/;Max-Age=${maxAge}`;
+                    document.cookie = `tr color="0";path=/;Max-Age=${maxAge}`;
+                }
+            });
         })
 
         $("#postaviTrajanjeKolacica").click(function(){
@@ -1499,11 +1551,11 @@ $(()=>{
                 $("#email").css('outline', 'none');
                 $.ajax({
                     method: 'POST',
-                    url: 'api.php?passReset',
                     dataType: 'json',
+                    url: 'api.php?passReset',
                     data: {email: $("#email").val() }
                 }).done(function(data){
-                    console.log(data);
+                    if(data != "Neuspjeh")
                     $("#e_mailTextBox").fadeOut( 500, function(){
                         $("#passTextBox").fadeIn( 500 );
                         let counter = 2;
@@ -1512,21 +1564,27 @@ $(()=>{
                             if($("#code").val() == data){
                                 $("#snackbar").html("Uneseni kod je ispravan!");
                                 showSnackbar();
-                                $("#passTextBox").fadeOut( 500, function(){
-                                    $("#passTextBox").fadeIn( 500 );
-                                    $("#codeLabel").html('Nova lozinka');
-                                    $("#posaljiLozinku").unbind();
-                                    $("#posaljiLozinku").html("Postavi");
-                                    $("#posaljiLozinku").click(function(){
-                                        $.ajax({
-                                            method: 'POST',
-                                            url: 'api.php?setPassword',
-                                            data: { lozinka: $("#code").val(), email: $("#email").val() }
-                                        }).done(function(){
-                                            
-                                        })
+                                let code = $("#code").val();
+                                $("#code").prop('disabled', 'true');
+                                $("#newPassTextBox").fadeIn( 500 );
+                                $("#posaljiLozinku").unbind();
+                                $("#posaljiLozinku").html("Postavi");
+                                $("#posaljiLozinku").click(function(){
+                                    $.ajax({
+                                        method: 'POST',
+                                        dataType: 'json',
+                                        url: 'api.php?setPassword',
+                                        data: { lozinka: $("#pass").val(), code: code, email: $("#email").val() }
+                                    }).done(function(data2){
+                                        console.log(data2);
+                                        if(data2 == "Uspjeh"){
+                                            $("#snackbar").html("Lozinka uspješno postavljena");
+                                            showSnackbar();
+                                            setTimeout(function(){ location.href='login.php' }, 2000);
+                                        }
                                     })
-                                } );
+                                })
+                                
                             }
                             else{
                                 $("#snackbar").html(`Imate još ${counter} pokušaja`);

@@ -8,6 +8,15 @@ body{
     overflow-x: hidden;
 }
 
+body.DarkTheme{
+    background-color: #121212;
+    color: rgba(255, 255, 255, 0.6);
+}
+body.DarkTheme table, body.DarkTheme tr {
+    background-color: #AFAFAF;
+    color: #000000;
+}
+
 main{
     position: relative;
     perspective: 1000px;

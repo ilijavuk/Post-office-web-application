@@ -85,7 +85,7 @@
                         <th id="broj_primljenih">Broj primljenih</th>
                         <th style="display: none;">ID Ureda</th>
                     </thead>
-                    <tbody>
+                    <tbody id="statistikUredTBody">
                         <?php
                             while($red = mysqli_fetch_assoc($rezultat2)){
                                 echo '

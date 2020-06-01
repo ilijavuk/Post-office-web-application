@@ -1,8 +1,8 @@
 <?php
     class Baza {
         const server = 'localhost';
-        const korisnik = 'root';
-        const lozinka = '';
+        const korisnik = 'WebDiP2019x144';
+        const lozinka = 'admin_FpmU';
         const baza = 'WebDiP2019x144';
 
         private $veza = null;

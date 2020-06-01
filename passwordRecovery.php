@@ -44,7 +44,11 @@
                 </div>
                 <div class = "textbox" id="passTextBox" style="display: none;">
                     <label for="code" id="codeLabel">Code</label>
-                    <input type = "code" name = "code" id="code" class="text"><br>
+                    <input type = "text" name = "code" id="code" class="text"><br>
+                </div>
+                <div class = "textbox" id="newPassTextBox" style="display: none;">
+                    <label for="pass" id="codeLabel">Nova lozinka</label>
+                    <input type = "password" name = "pass" id="pass" class="text"><br>
                 </div>
                 <div class="buttonWrapper">
                     <input id="posaljiLozinku" type = "submit" value = "Pošalji" class="submit"><br>

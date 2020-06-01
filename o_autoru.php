@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="hr">
     <head>
-        <title>Prijava</title>
+        <title>O autoru</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="author" content="Ilija Vuk">
@@ -33,12 +33,17 @@
                         <li>Matični broj</li>
                         <li><b>46198/17-R</b></li>
                         <li>Mail</li>
-                        <li><b><a style="text-decoration: none; color: #000000;" href="mailto:ivuk@foi.hr?subject=Kontakt sa stranice o autoru" target="_blank">ivuk@foi.hr</a></b></li>
+                        <li><b><a style="text-decoration: none;" href="mailto:ivuk@foi.hr?subject=Kontakt sa stranice o autoru" target="_blank">ivuk@foi.hr</a></b></li>
                         <li>Slika autora</li>
                         <li><img src="multimedija/autor-slika.jpg" alt="Autor" height=100 width=100 /></li>
                     </ul>
                     <div class="oAutoruTekst" >
-                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                        <p>Ja sam Ilija Vuk.</p>
+                        <p>Full stack developer iz Hrvatske.</p>
+                        <p>S html-om, css-om i javascriptom sam se upoznao već u srednjoj školi. Od tad sam zavolio razvoj web stranica te mi je to najdraže područje u svijetu programiranja.</p>
+                        <p>U srednjoj sam upoznat i sa MySQL-om i PHP-om. Taj dio mi je također zanimljiv te sam dosta vremena proveo u izradi baza podataka za različite projekte u srednjoj, na fakultetu, ali i u svoje slobodno vrijeme.</p>
+                        <p>Neke od tih projekata možete vidjeti na mojem GitHub računu klikom na <a href="https://github.com/ivuk98" style="color: green; text-decoration: underline; cursor: pointer;">ovaj link</a>.</p>
+                        <p>Ostali programski jezici kojima sam se bavio su Python 2.7 i 3.x, C, C++, C# te Java .</p>
                     </div>
                 </div>
             </div>
