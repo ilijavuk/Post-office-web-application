@@ -26,14 +26,22 @@
         <div class="footerWrapper">
 		<main>
             <div id="wrapper" class="rotateIn">
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque condimentum luctus accumsan. Morbi fringilla nisi sit amet ante accumsan finibus. Mauris rutrum faucibus condimentum. Proin eu iaculis ex, sed vestibulum felis. Nulla non feugiat eros, eget ultricies diam. Phasellus tristique vehicula sapien vel accumsan. Curabitur non fermentum massa. Mauris volutpat accumsan vestibulum. Integer gravida, nulla a consectetur porta, quam ante convallis nibh, a ultrices nisi arcu a quam. Aliquam eu leo vitae enim posuere lobortis. Nulla ipsum odio, condimentum ut nibh in, tincidunt volutpat nisi.
-                </p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque condimentum luctus accumsan. Morbi fringilla nisi sit amet ante accumsan finibus. Mauris rutrum faucibus condimentum. Proin eu iaculis ex, sed vestibulum felis. Nulla non feugiat eros, eget ultricies diam. Phasellus tristique vehicula sapien vel accumsan. Curabitur non fermentum massa. Mauris volutpat accumsan vestibulum. Integer gravida, nulla a consectetur porta, quam ante convallis nibh, a ultrices nisi arcu a quam. Aliquam eu leo vitae enim posuere lobortis. Nulla ipsum odio, condimentum ut nibh in, tincidunt volutpat nisi.
-                </p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque condimentum luctus accumsan. Morbi fringilla nisi sit amet ante accumsan finibus. Mauris rutrum faucibus condimentum. Proin eu iaculis ex, sed vestibulum felis. Nulla non feugiat eros, eget ultricies diam. Phasellus tristique vehicula sapien vel accumsan. Curabitur non fermentum massa. Mauris volutpat accumsan vestibulum. Integer gravida, nulla a consectetur porta, quam ante convallis nibh, a ultrices nisi arcu a quam. Aliquam eu leo vitae enim posuere lobortis. Nulla ipsum odio, condimentum ut nibh in, tincidunt volutpat nisi.
-                </p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque condimentum luctus accumsan. Morbi fringilla nisi sit amet ante accumsan finibus. Mauris rutrum faucibus condimentum. Proin eu iaculis ex, sed vestibulum felis. Nulla non feugiat eros, eget ultricies diam. Phasellus tristique vehicula sapien vel accumsan. Curabitur non fermentum massa. Mauris volutpat accumsan vestibulum. Integer gravida, nulla a consectetur porta, quam ante convallis nibh, a ultrices nisi arcu a quam. Aliquam eu leo vitae enim posuere lobortis. Nulla ipsum odio, condimentum ut nibh in, tincidunt volutpat nisi.
-                </p>
+                <div class="indexGrid">
+                    <div class="istaknutaSekcija" onclick="location.href='uredi.php'">
+                        Vršimo dostavu po cijeloj Europi i šire. <br>
+                        Pogledaj lokacije naših ureda
+                    </div>                
+
+                    <div class="istaknutaSekcija" onclick="location.href='posiljke.php'">
+                        Zanima te kako napreduje tvoja pošiljka? <br>
+                        Pregledaj sve pošiljke
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr;">
+                        <a href="dokumentacija.html" class="linkWithUnderline" style="display: block; font-size: 25px;">Dokumentacija</a>
+                        <a href="dokumentacija.html" class="linkWithUnderline" style="display: block; text-align: right; font-size: 25px;">O autoru</a>
+                    </div>
+                    </div>
             </div>
         </main>  
 

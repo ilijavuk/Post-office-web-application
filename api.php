@@ -1,6 +1,7 @@
 <?php
+
     if(isset($_GET['fetch_postanskiUred'])){
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $baza -> spojiDB();
         $upit = "SELECT * FROM postanskiured AS t1 LEFT JOIN (SELECT id_pocetniUred, COUNT(*) AS 'broj_poslanih' FROM posiljka GROUP BY id_pocetniUred) AS t2 ON  t1.postanskiUred_id = t2.id_pocetniUred INNER JOIN (SELECT postanskiUred_id, t4.broj_primljenih FROM postanskiured AS t3 LEFT JOIN (SELECT id_konacniUred, COUNT(*) AS 'broj_primljenih' FROM posiljka GROUP BY id_konacniUred) AS t4 ON  t3.postanskiUred_id = t4.id_konacniUred) AS q2 ON q2.postanskiUred_id=t1.postanskiUred_id";
@@ -25,7 +26,14 @@
     if(isset($_GET['insert_postanskiUred'])){
         session_start();
         if(isset($_SESSION['uloga']) && $_SESSION['uloga'] == 3){
-            require("baza.class.php"); 
+                    
+            $_POST['id_moderatora'] = filter_input(INPUT_POST, 'id_moderatora', FILTER_SANITIZE_NUMBER_INT);
+            $_POST['id_drzave'] = filter_input(INPUT_POST, 'id_drzave', FILTER_SANITIZE_NUMBER_INT);
+            $_POST['naziv'] = filter_input(INPUT_POST, 'naziv', FILTER_SANITIZE_STRING);
+            $_POST['adresa'] = filter_input(INPUT_POST, 'adresa', FILTER_SANITIZE_STRING);
+            $_POST['postanskiBroj'] = filter_input(INPUT_POST, 'postanskiBroj', FILTER_SANITIZE_NUMBER_INT);
+            
+            require_once("baza.class.php"); 
             $baza = new Baza;
             $veza = $baza -> spojiDB();
             $upit = "INSERT INTO postanskiured (id_moderatora, id_drzave, naziv, adresa, postanskiBroj) VALUES (?, ?, ?, ?, ?);";
@@ -48,31 +56,38 @@
     }
 
     if(isset($_GET['insert_drzava'])){
-        if($isset($_POST['naziv']) && $isset($_POST['skraceniOblik']) && $isset($_POST['produzeniOblik']) && $isset($_POST['clanEU'])  && $strlen($_POST['naziv']) > 0 && $strlen($_POST['skraceniOblik']) > 0 &&  $strlen($_POST['produzeniOblik']) > 0 )
-        require("baza.class.php"); 
-        $baza = new Baza;
-        $veza = $baza -> spojiDB();
-        $upit = "INSERT INTO drzava (naziv, skraceniOblik, produzeniOblik, clanEU) VALUES (?, ?, ?, ?);";
-        $stmt = $veza -> prepare($upit);
-        if($stmt == null){
-            echo json_encode('Neuspjeh');
-        }
-        else{
-            $stmt -> bind_param("sssi", $_POST['naziv'], $_POST['skraceniOblik'], $_POST['produzeniOblik'], $_POST['clanEU']);
-            $stmt -> execute();
-            if($stmt->affected_rows > 0){
-                echo json_encode("Uspjeh");
-                zapisiULog($upit, '2', $veza, 'drzava');
+        if(isset($_POST['naziv']) && isset($_POST['skraceniOblik']) && isset($_POST['produzeniOblik']) && isset($_POST['clanEU'])  && strlen($_POST['naziv']) > 0 && strlen($_POST['skraceniOblik']) > 0 &&  strlen($_POST['produzeniOblik']) > 0 ){
+            $_POST['naziv'] = filter_input(INPUT_POST, 'naziv', FILTER_SANITIZE_STRING);
+            $_POST['skraceniOblik'] = filter_input(INPUT_POST, 'skraceniOblik', FILTER_SANITIZE_STRING);
+            $_POST['produzeniOblik'] = filter_input(INPUT_POST, 'produzeniOblik', FILTER_SANITIZE_STRING);
+            $_POST['clanEU'] = filter_input(INPUT_POST, 'clanEU', FILTER_SANITIZE_NUMBER_INT);
+
+            require_once("baza.class.php"); 
+            $baza = new Baza;
+            $veza = $baza -> spojiDB();
+            $upit = "INSERT INTO drzava (naziv, skraceniOblik, produzeniOblik, clanEU) VALUES (?, ?, ?, ?);";
+            $stmt = $veza -> prepare($upit);
+            if($stmt == null){
+                echo json_encode('Neuspjeh');
             }
             else{
-                echo json_encode("Neuspjeh");
+                $stmt -> bind_param("sssi", $_POST['naziv'], $_POST['skraceniOblik'], $_POST['produzeniOblik'], $_POST['clanEU']);
+                $stmt -> execute();
+                if($stmt->affected_rows > 0){
+                    echo json_encode("Uspjeh");
+                    zapisiULog($upit, '2', $veza, 'drzava');
+                }
+                else{
+                    echo json_encode("Neuspjeh");
+                }
             }
         }
     }
 
     if(isset($_GET['fetch_drzaveStatistika'])){
-        require("baza.class.php");
+        require_once("baza.class.php");
         session_start();
+
         $baza = new Baza;
         $veza = $baza -> spojiDB();
         $upit = "SELECT t1.naziv, COUNT(t3.posiljka_id) as broj_posiljki, SUM(case t4.placen when '1' then 1 else 0 end) AS broj_placenih FROM drzava AS t1 LEFT JOIN postanskiured AS t2 ON t1.drzava_id=t2.id_drzave LEFT JOIN posiljka AS t3 ON t2.postanskiUred_id=t3.id_pocetniUred LEFT JOIN racun AS t4 ON t3.posiljka_id=t4.id_posiljka WHERE t3.vrijeme_slanja >= ? AND t3.vrijeme_slanja <= ? AND t2.id_moderatora = ? GROUP BY t1.naziv;";
@@ -92,13 +107,6 @@
             while ($red = $rezultat->fetch_assoc())
             {
                 $redovi[] = $red;
-                /*
-                $broj_posiljki = ($red['broj_posiljki'] == '' ? 0 : $red['broj_posiljki']);
-                echo  ' <tr>
-                <td>'.$red['naziv'].'</td>
-                <td>'.$broj_posiljki.'</td>
-                <td>'.$red['broj_placenih'].'</td>
-                </tr>';*/
             }
             echo json_encode($redovi);
             zapisiULog($upit, '2', $veza, 'statistika drzave'); 
@@ -108,7 +116,7 @@
     if(isset($_GET['fetch_drzaveKratice'])){
         session_start();
         if(isset($_SESSION['uloga']) && $_SESSION['uloga'] >= 2){
-            require("baza.class.php");
+            require_once("baza.class.php");
             $baza = new Baza;
             $baza -> spojiDB();
             $rezultat = $baza -> SelectDB("SELECT naziv, skraceniOblik FROM drzava;");
@@ -126,7 +134,7 @@
     }
 
     if(isset($_GET['insert_racun'])){
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
         $upit1 = "SELECT t1.id_moderatora FROM postanskiured as t1 LEFT JOIN posiljka as t2 ON t1.postanskiUred_id=t2.id_konacniUred WHERE posiljka_id = ?";
@@ -152,8 +160,8 @@
                    echo json_encode('Neuspjeh $stmt = null');
                    }
                    else{
-                       $currTime = date("Y-m-d")." ".date("H:i:s");
-                       $rokZaPlacanje = date("Y-m-d", strtotime("+7 days"))." ".date("H:i:s");
+                       $currTime = date("Y-m-d H:i:s", strtotime(dohvatiPomak()." hours"));
+                       $rokZaPlacanje = date("Y-m-d H:i:s", strtotime( "$currTime + 7 days" ));
                        $stmt -> bind_param("iissi", $_POST['id_posiljka'], $id_moderatora, $currTime, $rokZaPlacanje, $_POST['iznos']);
                        $stmt -> execute();
                        if($stmt->affected_rows > 0){
@@ -174,7 +182,7 @@
 
     if(isset($_GET['update_racun'])){
         if(isset($_POST['slika']) && isset($_POST['racun_id']) && isset($_POST['dopustenje']) && strlen($_POST['slika']) > 0 && strlen($_POST['racun_id']) > 0 ){   
-            require("baza.class.php"); 
+            require_once("baza.class.php"); 
             $baza = new Baza;
             $veza = $baza -> spojiDB();
             $upit = "UPDATE racun SET placen='1', slika=?, dopustenjeZaObjavu=? WHERE racun_id = ?;";
@@ -201,7 +209,7 @@
     }
 
     if(isset($_GET['update_racunDodajIznos'])){
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
         $upit = "UPDATE racun SET puniIznos=(iznos+?) WHERE racun_id = ?;";
@@ -228,7 +236,7 @@
     }
 
     if(isset($_GET['fetch_korisnikFromRacun'])){
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
         $upit = "SELECT korisnik_id, CONCAT(ime,' ',prezime,'(',korisnicko_ime,')') AS ime FROM korisnik AS t1 LEFT JOIN posiljka AS t2 ON t1.korisnik_id=t2.id_primatelja LEFT JOIN racun AS t3 ON t2.posiljka_id=t3.id_posiljka WHERE racun_id = ?;";
@@ -256,9 +264,9 @@
     }
 
     if(isset($_GET['update_korisnikBlock'])){
-        $datum = date("Y-m-d H:i:s", strtotime("+7 days"));
+        $datum = date("Y-m-d H:i:s", strtotime("+7 days + ".dohvatiPomak()." hours"));
         
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
         $upit = "UPDATE korisnik SET blokiranDo=?, id_status=3 WHERE korisnik_id = ?;";
@@ -280,7 +288,7 @@
     }
 
     if(isset($_GET['update_korisnikUnblock'])){
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
         $upit = "UPDATE korisnik SET blokiranDo=NULL, id_status=2, neuspjeliLogin=0 WHERE korisnik_id = ?;";
@@ -304,7 +312,7 @@
     if(isset($_GET['update_korisnikGiveModerator'])){
         session_start();
         if($_SESSION['uloga'] == 3){
-            require("baza.class.php"); 
+            require_once("baza.class.php"); 
             $baza = new Baza;
             $veza = $baza -> spojiDB();
             $upit = "UPDATE korisnik SET id_uloga=2 WHERE korisnik_id = ?;";
@@ -328,7 +336,7 @@
 
     if(isset($_GET['insert_posiljka'])){
         session_start();
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
         $upit = "INSERT INTO posiljka (id_posiljatelja, id_primatelja, masa, vrijeme_slanja) VALUES (?, ?, ?, CURDATE());";
@@ -350,7 +358,7 @@
     }
 
     if(isset($_GET['update_posiljkaAktiviraj'])){
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
         $upit = "UPDATE posiljka SET id_pocetniUred=?, id_konacniUred=?, id_trenutniUred=?, cijenaPoKg=? WHERE posiljka_id=?;";
@@ -371,7 +379,7 @@
     }
 
     if(isset($_GET['update_posiljkaProslijedi'])){
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
         if($_GET['update_posiljkaProslijedi'] == 1){
@@ -405,7 +413,7 @@
     }
 
     if(isset($_GET['fetch_korisnickoIme'])){
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
         $upit = "SELECT * FROM korisnik WHERE korisnicko_ime = ?;";
@@ -454,7 +462,7 @@
         $lozinka_sha1 = sha1($_POST['lozinka']);
         $link_aktivacije = sha1($_POST['korisnicko_ime']);
 
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
         $upit = "INSERT INTO korisnik (ime, prezime, korisnicko_ime, lozinka, lozinka_sha1, email, linkAktivacije) VALUES (?, ?, ?, ?, ?, ?, ?);";
@@ -580,7 +588,7 @@
     }
 
     if(isset($_GET['aktivacija'])){
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
         $upit = "SELECT * FROM korisnik WHERE linkAktivacije = ?;";
@@ -615,7 +623,7 @@
 
     if(isset($_GET['login'])){
         if(isset($_POST['lozinka']) && strlen($_POST['lozinka']) >= 8){
-            require("baza.class.php"); 
+            require_once("baza.class.php"); 
             $baza = new Baza;
             $veza = $baza -> spojiDB();
             $rezultat = $baza->SelectDB("SELECT brojPokusaja FROM postavke;");
@@ -658,10 +666,12 @@
                 else if($red['lozinka_sha1'] == $lozinka_sha1){
                     $_SESSION['kor_id'] = $red['korisnik_id'];
                     $_SESSION['uloga'] = $red['id_uloga'];
-                    if($red['id_status'] == 3 && strtotime($red['blokiranDo']) > strtotime("now")){
+                    if($red['id_status'] == 3 && strtotime($red['blokiranDo']) > strtotime(dohvatiPomak()." hours")){
+                        echo 'nije proslo';
                         $_SESSION['blokiran'] = "1";
                     }
-                    else if($red['id_status'] == 3 && strtotime($red['blokiranDo']) < strtotime("now")){
+                    else if($red['id_status'] == 3 && strtotime($red['blokiranDo']) < strtotime(dohvatiPomak()." hours")){
+                        echo 'proslo';
                         $upit3 = "UPDATE korisnik SET blokiranDo = NULL, id_status = 2 WHERE korisnicko_ime = ?";
                         $stmt = $veza -> prepare ($upit3);
                         $stmt -> bind_param("s", $_POST['korisnicko_ime']);
@@ -718,14 +728,14 @@
 
         $upit = "INSERT LOGOUT";
     
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
         zapisiULog($upit, '1', $veza, 'logout');    
     }
 
     if(isset($_GET['fetch_galerija'])){
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $veza = $baza -> spojiDB();
         $upit = "SELECT t2.slika FROM posiljka AS t1 RIGHT JOIN racun AS t2 ON t1.posiljka_id=t2.id_posiljka WHERE dopustenjeZaObjavu = 1 AND slika IS NOT NULL AND t1.id_konacniUred=?;";
@@ -754,7 +764,7 @@
 
     if(isset($_GET['check_timeout'])){
         session_start();
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $baza -> spojiDB();
         $upit = "SELECT trajanjeSesije FROM postavke;";
@@ -771,7 +781,7 @@
     }
 
     if(isset($_GET['fetch_trajanjeKolacica'])){
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $baza -> spojiDB();
         $upit = "SELECT trajanjeKolacica FROM postavke;";
@@ -784,7 +794,7 @@
     }
 
     if(isset($_GET['fetch_stranicenje'])){
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $baza -> spojiDB();
         $upit = "SELECT stranicenje FROM postavke;";
@@ -796,7 +806,7 @@
     }
 
     if(isset($_GET['fetch_tema'])){
-        require("baza.class.php"); 
+        require_once("baza.class.php"); 
         $baza = new Baza;
         $baza -> spojiDB();
         if(isset($_POST['fetchNightMode'])){
@@ -817,7 +827,7 @@
     if(isset($_GET['update_cookiesAccept'])){
         session_start();
         if(isset($_SESSION['kor_id'])){
-            require("baza.class.php"); 
+            require_once("baza.class.php"); 
             $baza = new Baza;
             $veza = $baza -> spojiDB();
             $upit = "UPDATE korisnik SET uvjeti=1 WHERE korisnik_id = ?;";
@@ -842,7 +852,7 @@
     if(isset($_GET['update_cookiesReset'])){
         session_start();
         if(isset($_SESSION['uloga']) && $_SESSION['uloga'] == 3){
-            require("baza.class.php"); 
+            require_once("baza.class.php"); 
             $baza = new Baza;
             $baza -> spojiDB();
             $rezultat = $baza -> ostaliUpitDB("UPDATE korisnik SET uvjeti=0;");
@@ -854,7 +864,7 @@
         session_start();
         if(isset($_SESSION['uloga']) && $_SESSION['uloga'] == 3){
             $kljuc = array_key_first($_POST);
-            require("baza.class.php"); 
+            require_once("baza.class.php"); 
             $baza = new Baza;
             $veza = $baza -> spojiDB();
             $upit = "UPDATE postavke SET ".$kljuc." = ?;";
@@ -881,7 +891,7 @@
             session_start();
         }
         if($_SESSION['uloga'] == 3){
-            require("baza.class.php"); 
+            require_once("baza.class.php"); 
             $baza = new Baza;
             $veza = $baza -> spojiDB();
             $upit ="SELECT t2.ime, t3.naziv, t1.radnja, t1.upit FROM dnevnik AS t1 LEFT JOIN (SELECT korisnik_id, CONCAT(ime,' ', prezime,'(',korisnicko_ime,')') AS ime FROM korisnik) AS t2 ON t1.id_korisnik=t2.korisnik_id LEFT JOIN tip AS t3 ON t1.id_tip = t3.tip_id WHERE t1.vrijeme >= ? AND t1.vrijeme <= ?";
@@ -1080,7 +1090,7 @@
                 
                 mail($to, $subject, $message, implode("\r\n", $headers));
 
-            require("baza.class.php"); 
+            require_once("baza.class.php"); 
             $baza = new Baza;
             $veza = $baza -> spojiDB();
             $upit ="UPDATE korisnik SET id_status='4', codeZaReset = ? WHERE email = ?";
@@ -1103,7 +1113,7 @@
 
     if(isset($_GET['setPassword'])){
         if(isset($_POST['lozinka']) && isset($_POST['email']) && isset($_POST['code'])){
-            require("baza.class.php"); 
+            require_once("baza.class.php"); 
             $baza = new Baza;
             $veza = $baza -> spojiDB();
             $upit ="SELECT codeZaReset FROM korisnik WHERE codeZaReset=? AND id_status='4' AND email = ?";
@@ -1145,4 +1155,54 @@
         }
     }
 
+    if(isset($_GET['spremiPomak'])){
+        session_start();
+        //
+        if(isset($_POST['brojSati']) && strlen($_POST['brojSati']) ){
+            require_once("baza.class.php"); 
+            $baza = new Baza;
+            $veza = $baza -> spojiDB();
+            $upit = "UPDATE postavke SET pomakVremena = ?;";
+            $stmt = $veza -> prepare($upit);
+            if($stmt == null){
+                echo mysqli_error($veza);
+            }
+            else{
+                $stmt -> bind_param("i", $_POST['brojSati']);
+                $stmt -> execute();
+                if($stmt->affected_rows > 0){
+                    echo json_encode("Uspjeh");
+                    zapisiULog($upit, '2', $veza,'poštanski ured');
+                }
+                else{
+                    echo json_encode("Neuspjeh");
+                }
+            }
+        }
+        else{
+            echo 'notokej';
+        }
+    }
+
+    if(isset($_GET['dohvatiFont'])){
+        require_once("baza.class.php"); 
+        $baza = new Baza;
+        $baza -> spojiDB();
+        $upit = "SELECT font FROM postavke;";
+        $rezultat = $baza -> SelectDB($upit);
+        if($red = mysqli_fetch_assoc($rezultat)){
+           echo json_encode($red['font']);
+        }
+    }
+
+    function dohvatiPomak(){
+        require_once("baza.class.php"); 
+        $baza = new Baza;
+        $baza -> spojiDB();
+        $rezultat = $baza -> SelectDB("SELECT pomakVremena FROM postavke;");
+        
+        if($red = mysqli_fetch_assoc($rezultat)){
+            return $red['pomakVremena'];
+        }
+    }
 ?>

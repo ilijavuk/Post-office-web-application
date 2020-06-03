@@ -51,9 +51,15 @@
 
         <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.css"/>
         <link rel="stylesheet" href="css/ivuk.css">
-        <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
-        <script src="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js"></script>
-        <script src="javascript/ivuk.js"></script>
+        <style type="text/css">
+            @media print
+            {
+                body * { visibility: hidden; }
+                #statistikaWrapper *{ visibility: visible; }
+                #statistikaWrapper { position: absolute; top: 70px; left: 50%; transform: translateX(-50%) scale(1.5); }
+                #canvas { background-color: #FFF;}
+            }
+        </style>
     </head>
     <body>
        <?php
@@ -132,6 +138,7 @@
                         echo '<div id="saljemPrimamWrapper" style="display:none;">
                                 <h2>Pošiljke koje šaljem</h2>
                                 <hr>
+                                <div class="tableWrapper">
                                 <table id="saljemTable">
                                 <thead>
                                     <th>Primatelj</th>
@@ -155,12 +162,13 @@
                             }
 
                             echo '</tbody>
-                            </table>';
+                            </table></div>';
 
                         //primam
                         echo '
                             <h2 style="margin-top: 15px;">Pošiljke koje primam</h2>
                             <hr>
+                            <div class="tableWrapper">
                             <table id="primamTable">
                                 <thead>
                                     <th>Ime pošiljatelja</th>
@@ -190,7 +198,7 @@
                             }
 
                             echo '</tbody>
-                            </table>';
+                            </table></div>';
 
                         if($_SESSION['uloga']  >= 2){
                                 
@@ -199,6 +207,7 @@
                         echo '
                         <h2 style="margin-top: 15px;">Primljene pošiljke(Moderator)</h2>
                         <hr>
+                        <div class="tableWrapper">
                         <table id="primamModerator">
                             <thead>
                                 <th style="display: none;">ID</th>
@@ -219,7 +228,7 @@
                         }
 
                         echo '</tbody>
-                        </table>';
+                        </table></div>';
                            
                         }
 
@@ -249,6 +258,7 @@
                             echo '
                             <h2 style="margin-top: 15px;">Statistika</h2>
                             <hr>
+                            <div class="tableWrapper">
                             <table id="statistikaTable">
                                 <thead>
                                     <th>Naziv</th>
@@ -265,11 +275,17 @@
                                     </tr>';
                                 }
                             echo '</tbody>
-                            </table>';
+                            </table></div>';
                             if($rezultat4->num_rows > 0){
-                                echo '<h2 style="margin-top: 50px;">PP - Poslane pošiljke</h2>
+                                echo '<span id="print"> &#128438; </span>
+                                <figure id="saveAsPDF"><img src="multimedija/pdf-icon.svg" alt="Pdf icon"></figure>
+        
+                                <div id="forPrint">
+                                <h2 style="margin-top: 50px;">PP - Poslane pošiljke</h2>
                                 <h2>BP - Broj plaćenih</h2>
-                                <canvas id="canvas" height="300" style="border:1px solid #f1cd7b;"></canvas>';
+                                <canvas id="canvas" height="300" style="border:1px solid #f1cd7b;">
+                                </canvas>
+                                </div>';
                             }
                         echo '
                         </div>
@@ -280,6 +296,7 @@
                     if($_SESSION['uloga']  >= 3){
                         echo '<div id="zahtjeviZaPosiljkamaWrapper" style="display:none;"><h2>Zahtjevi za pošiljkama</h2>
                         <hr>
+                        <div class="tableWrapper">
                         <table id="zahtjeviTable">
                         <thead>
                             <th style="display:none;">ID</th>
@@ -333,7 +350,7 @@
                     }
 
                     echo '</tbody>
-                    </table>
+                    </table> </div>
                     <div class="buttonWrapper">
                         <input id="azurirajPosiljkeBtn" type = "submit" value = "Ažuriraj pošiljke" class="button add"><br>
                     </div></div>';
@@ -406,4 +423,8 @@
     </div>
     <div id="snackbar"></div>
     </body>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js"></script>
+    <script src="javascript/ivuk.js"></script>
+    <script src="vanjske_biblioteke/jsPDF-1.3.2/dist/jspdf.min.js"></script>
 </html>

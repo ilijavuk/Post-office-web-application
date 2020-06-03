@@ -22,11 +22,19 @@ $(()=>{
         });
     }    
 
+    $.ajax({
+        url: "api.php?dohvatiFont",
+        method: "POST",
+        dataType: 'json'
+    }).done(function(data){
+        $("*").css('font-family',`${data}`);
+        if($("#font")[0] != undefined)
+        $("#font").val(data);
+    })
+
     var kolacic = document.cookie.split("; ");
     let prihvatioUvjete = false;
     
-   
-        
     $.ajax({
         url: "api.php?fetch_tema",
         method: 'POST',
@@ -36,24 +44,23 @@ $(()=>{
         for(var i = 0; i < kolacic.length; i++){
             var naziv = kolacic[i].split("=")[0];
             var vrijednost = kolacic[i].split("=")[1];
-            if(vrijednost == "0"){
-                vrijednost = "";
-            }
-            switch(naziv){
-                case 'body background-color': $("body").css('background-color',`${vrijednost}`); set=1;break;
-                case 'body color': $("body").css('color',`${vrijednost}`); set=1;break;
-                case 'tr background-color': $("tr").css('background-color',`${vrijednost}`); set=1;break;
-                case 'table color': $("table").css('color',`${vrijednost}`); set=1;break;
-                case 'tr color': $("tr").css('color',`${vrijednost}`); set=1;break;
+            if(naziv == "nocniNacinRada"){
+                set = 1;
+                if(vrijednost == "true"){
+                    $("body").addClass('DarkTheme');
+                }
+                else if(vrijednost == "false"){
+                    $("body").removeClass('DarkTheme');
+                }
             }
         } 
-
         if(!set){
-            $("body").css('background-color',`${data['pozadina']}`);
-            $("body").css('color', `${data['bojaFonta']}`);
-            $("tr").css('background-color', `${data['pozadinaTablica']}`)
-            $("table").css('color', `${data['tekstTablica']}`)
-            $("tr").css('color', `${data['tekstTablica']}`)
+            if(data['naziv'] == "Dark"){
+                $("body").addClass('DarkTheme');
+            }
+            else{
+                $("body").removeClass('DarkTheme');
+            }
         }
     });
     
@@ -114,6 +121,7 @@ $(()=>{
         if(window.location.href.startsWith("http://")){
             window.location.href = "https"+window.location.href.substr(4);
         }
+
         for(var i = 0; i < kolacic.length; i++){
             var naziv = kolacic[i].split("=")[0];
             var vrijednost = kolacic[i].split("=")[1]
@@ -1075,13 +1083,59 @@ $(()=>{
         }
     }
 
+    if($("#print")){
+        $("#print").click(function(){
+            window.print();
+        })
+    }
+
+    if($("#saveAsPDF")){
+        $("#saveAsPDF").click(function(){
+            var pdf = new jsPDF('p','pt','a4');
+            var elementHTML = $('#forPrint').html();
+            var specialElementHandlers = {
+                '#elementH': function (element, renderer) {
+                    return true;
+                }
+            };
+            pdf.fromHTML(elementHTML, 15, 15, {
+                'width': 170,
+                'elementHandlers': specialElementHandlers
+            });
+            pdf.save('sample-document.pdf');
+        });
+    }
+
     if(window.location.href.includes('postavke')){
-        if($("#print")){
-            $("#print").click(function(){
-                window.print();
-                
-            })
-        }
+        $.ajax({
+            method: "post",
+            url: "https://barka.foi.hr/WebDiP/pomak_vremena/pomak.php?format=json",
+            dataType: 'json',
+            data: { brojSati: $("#pomakVremena").val() }
+        }).done(function(data){
+            $("#pomakVremena").val(data['WebDiP']['vrijeme']['pomak']['brojSati']);
+        })
+        
+
+        $("#spremiPomakVremena").click(function(){
+            if($("#pomakVremena").val() == '' || isNaN($("#pomakVremena").val())){
+                $("#snackbar").html("Pogrešan unos");
+                showSnackbar();
+            }
+            else{
+                $.ajax({
+                    method: "post",
+                    url: "api.php?spremiPomak",
+                    dataType: 'json',
+                    data: { brojSati: $("#pomakVremena").val() }
+                }).done(function(data){
+                    if(data == "Uspjeh"){
+                        $("#snackbar").html("Pomak vremena spremljen");
+                        showSnackbar();
+                    }
+                })
+            }
+        })
 
         if($("#dnevnikTable"))
         var table = $('#dnevnikTable').DataTable({
@@ -1142,7 +1196,10 @@ $(()=>{
             }
         }
 
-        getDnevnikForCanvas();
+        if($("#canvas")[0] != undefined){
+
+            getDnevnikForCanvas();
+        }
         
         function getDnevnikForCanvas(){
             poljeSPodatcima = table.rows( { search: 'applied' } ).data();
@@ -1180,17 +1237,6 @@ $(()=>{
         function obradiPodatkeZaCanvas(){
             let poljePodatakaZaGraf = [];
             poljeSPodatcima = table.data();
-            poljeSPodatcima.each(function(){
-                console.log($(this)[2]);
-            })
-
-            poljeSPodatcima.each(function(){
-                $(this).each(function(){
-                    console.log($(this));
-                })
-            })
-            
-            
             $("#statistikaTbody").children().each(function(){
                 $vrijednost = ($(this).children()[0].innerHTML);
                 if(!$vrijednost.includes("nema postojećih pošiljki")){
@@ -1249,7 +1295,6 @@ $(()=>{
                 url: "api.php?update_korisnikBlock",
                 data: {korisnik_id: $("#id_korisnik").val() },
             }).done(function(data) {
-                console.log(data);
                 $("#snackbar").html('Korisnik uspješno blokiran');
                 showSnackbar();
             });
@@ -1274,7 +1319,6 @@ $(()=>{
                 url: "api.php?update_korisnikBlock",
                 data: {korisnik_id: $("#id_korisnik").val() },
             }).done(function(data) {
-                console.log(data);
                 if(data == "Uspjeh"){
                     $("#snackbar").html('Korisnik je sada moderator');
                 }
@@ -1317,39 +1361,10 @@ $(()=>{
                 document.cookie = nocniNacinRada + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
                 document.cookie = `nocniNacinRada=${$("#nocniNacinRada").prop('checked')};path=/;Max-Age=${maxAge}`;
                 if($("#nocniNacinRada").prop('checked')){
-                    $.ajax({
-                        url: "api.php?fetch_tema",
-                        method: 'POST',
-                        dataType: 'json',
-                        data: {fetchNightMode: 1}
-                    }).done(function(data) {
-                        $("body").css('background-color',`${data['pozadina']}`);
-                        $("body").css('color', `${data['bojaFonta']}`);
-                        $("tr").css('background-color', `${data['pozadinaTablica']}`)
-                        $("table").css('color', `${data['tekstTablica']}`)
-                        $("tr").css('color', `${data['tekstTablica']}`)
-                        
-                        
-                        document.cookie = `body background-color=${data['pozadina']};path=/;Max-Age=${maxAge}`;
-                        document.cookie = `body color=${data['bojaFonta']};path=/;Max-Age=${maxAge}`;
-                        document.cookie = `tr background-color=${data['pozadinaTablica']};path=/;Max-Age=${maxAge}`;
-                        document.cookie = `table color=${data['tekstTablica']};path=/;Max-Age=${maxAge}`;
-                        document.cookie = `tr color=${data['tekstTablica']};path=/;Max-Age=${maxAge}`;
-                
-                    });
+                    $("body").addClass('DarkTheme');
                 }
                 else{
-                    $("body").css('background-color','');
-                    $("body").css('color','');
-                    $("tr").css('background-color', ``)
-                    $("table").css('color', ``)
-                    $("tr").css('color', ``)
-
-                    document.cookie = `body background-color="0";path=/;Max-Age=${maxAge}`;
-                    document.cookie = `body color="0";path=/;Max-Age=${maxAge}`;
-                    document.cookie = `tr background-color="0";path=/;Max-Age=${maxAge}`;
-                    document.cookie = `table color="0";path=/;Max-Age=${maxAge}`;
-                    document.cookie = `tr color="0";path=/;Max-Age=${maxAge}`;
+                    $("body").removeClass('DarkTheme');
                 }
             });
         })
@@ -1472,7 +1487,21 @@ $(()=>{
 
         $("#postaviFont").click(function(){
             $("*").css('font-family',`${$("#font").val()}`)
-            console.log($("#font").val());
+            $.ajax({
+                method: 'POST',
+                url: './api.php?update_postavkeSet',
+                dataType: 'json',
+                data: { font: $("#font").val() },
+            }).done(function(data){
+                if(data == 'Uspjeh'){
+                    $("#snackbar").html('Font uspješno postavljeno');
+                    showSnackbar();
+                }
+                else{
+                    $("#snackbar").html('Postavljanje fonta nije uspjelo');
+                    showSnackbar();
+                }
+            })
         })
 
         $(".dnevnikRedak").click(function(){
@@ -1576,7 +1605,6 @@ $(()=>{
                                         url: 'api.php?setPassword',
                                         data: { lozinka: $("#pass").val(), code: code, email: $("#email").val() }
                                     }).done(function(data2){
-                                        console.log(data2);
                                         if(data2 == "Uspjeh"){
                                             $("#snackbar").html("Lozinka uspješno postavljena");
                                             showSnackbar();

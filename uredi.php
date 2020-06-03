@@ -75,6 +75,8 @@
                     -->
                 </div>
                 
+                
+                <div class="tableWrapper">
                 <table>
                     <thead>
                         <th>Naziv</th>
@@ -149,6 +151,7 @@
                         ?>
                     </tbody>
                 </table>
+                </div>
                 <?php
                     if($_SESSION['uloga']  == 3){
                     echo '<div class="buttonWrapper">

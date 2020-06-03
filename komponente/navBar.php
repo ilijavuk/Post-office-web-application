@@ -3,8 +3,8 @@
     <a href="racuni.php" class="navLink">Računi</a>
     <a href="uredi.php" class="navLink">Uredi</a>
     <a href="drzave.php" class="navLink">Države</a>
-    <a href="o_autoru.php" class="navLink">O autoru</a>
-    <a href="dokumentacija.php" class="navLink">Dokumentacija</a>
+    <a href="dokumentacija.html" class="navLink">Dokumentacija</a>
+    <a href="o_autoru.html" class="navLink">O autoru</a>
     <?php
     if(!isset($_SESSION)){ 
         session_start(); 

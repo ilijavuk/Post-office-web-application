@@ -66,13 +66,17 @@
                 ?>
                 <?php
                     if($_SESSION['uloga']  >= 1){
-                        echo '<table id="my">
+                        echo '
+                        <div id="my">
+                        <div class="tableWrapper">
+                        <table>
                         <thead>
                             <th>Vrijeme izdavanja</th>
                             <th>Plaćen</th>
                             <th>Iznos pošiljke</th>
                             <th>Puni iznos</th>
                             <th>Slika</th>
+                            <th style="display: none;">ID Računa</th>
                         </thead>
                         <tbody>';
                         while($red = mysqli_fetch_assoc($rezultat)){
@@ -92,19 +96,23 @@
                         }
                         echo '
                         </tbody>
-                    </table>';
+                    </table></div></div>';
                     }
                 ?>
                 <?php 
                     if($_SESSION['uloga']  >= 2){
                         echo '
-                        <table id="izdani" style="display: none;">
+                        <div id="izdani" style="display: none;">
+                        <div class="tableWrapper">
+                        <table>
                         <thead>
                             <th>Vrijeme izdavanja</th>
                             <th>Plaćen</th>
                             <th>Iznos pošiljke</th>
                             <th>Puni iznos</th>
                             <th>Slika</th>
+                            <th style="display: none;">ID Računa</th>
+                            <th style="display: none;">Rok za plaćanje</th>
                         </thead>
                         <tbody>';
                         while($red = mysqli_fetch_assoc($rezultat2)){
@@ -125,22 +133,24 @@
                             }
                             echo '
                             </tbody>
-                        </table>';
+                        </table></div></div>';
                     }
                 ?>
                 <?php 
                     if($_SESSION['uloga'] >= 2){
                     echo '
-                        <div id="zahtjevi"  style="display: none;">
+                        <div id="zahtjevi" style="display: none;">
+                        <div class="tableWrapper">
                             <table>
                             <thead>
                                 <th>Vrijeme izdavanja</th>
                                 <th>Iznos pošiljke</th>
                                 <th>Iznos obrade</th>
+                                <th style="display: none;">ID Računa</th>
                             </thead>
                             <tbody id="zahtjeviZaRacune">';
                             if($rezultat3->num_rows == 0){
-                                echo '<tr><td colspan=3>Trenutno nemate zahtjeva</tr>';
+                                echo '<tr><td colspan=4>Trenutno nemate zahtjeva</td><td></td><td></td><td></td></tr>';
                             }
                             while($red = mysqli_fetch_assoc($rezultat3)){
                                 echo '<tr">
@@ -152,7 +162,7 @@
                                 }
                                 echo '
                                 </tbody>
-                            </table>';
+                            </table></div>';
                             if($rezultat3->num_rows > 0){
                                 echo '<div class="buttonWrapper">
                                 <input id="azurirajRacuneBtn" type = "submit" value = "Ažuriraj račune" class="button add"><br>

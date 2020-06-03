@@ -72,6 +72,7 @@
                         
                         <h2>Korisnici</h2>
                         <hr>
+                        <div class="tableWrapper">
                         <table style="width: 100%;">
                             <thead>';
                                 echo '<th class="listaKorisnik_ID">ID Korisnika</th>
@@ -104,7 +105,7 @@
 
                             </tbody>
                         </table>
-
+                        </div>
 
                         <h2 style="margin-top: 50px;">Uvjeti korištenja</h2>
                         <hr>
@@ -159,6 +160,12 @@
                         <div class="buttonWrapper inlineBtn">
                             <input id="postaviTemu" type = "submit" value = "Postavi temu" class="button add inlineBtn"><br>
                         </div>
+                        <div class = "textbox inlineWithBtn" id="pomakVremenaTextbox">
+                            <input type = "text" name = "pomakVremena" id="pomakVremena" class="text" style="border: 1px solid #707070;" placeholder="Pomak vremena"><br>
+                        </div>
+                        <div class="buttonWrapper inlineBtn">
+                            <input id="spremiPomakVremena" type = "submit" value = "Spremi pomak u bazu" class="button add inlineBtn"><br>
+                        </div>
 
                         <h2 style="margin-top: 50px;">Dnevnik rada</h2>
                         <hr>
@@ -176,6 +183,7 @@
                             </div>
                         </div>
                         
+                        <div class="tableWrapper">
                         <table id="dnevnikTable" style="width: 100%;">
                             <thead>
                                 <th>Ime korisnika</th>
@@ -196,12 +204,16 @@
                             echo '
                             </tbody>
                         </table>
+                        </div>
                         
                         <h2 style="margin-top: 50px;">Statistika</h2>
                         <hr>
                         
                         <span id="print"> &#128438; </span>
+                        <figure id="saveAsPDF" style="object-fit: contain; width: 40px; height: 53px; display: inline-block; float: right;"><img src="multimedija/pdf-icon.svg" alt="Pdf icon"></figure>
+
                         <div id="forPrint">
+                        <div class="tableWrapper">
                         <table id="dnevnikStatistikaTable" style="width: 100%; margin-top: 15px;">
                             <thead>
                                 <th>Radnja</th>
@@ -210,6 +222,7 @@
                             <tbody id="dnevnikStatistikaTBody">
                             </tbody>
                         </table>
+                        </div>
 
                         <canvas id="canvas" height="300" width="400" style="border:1px solid #f1cd7b;"></canvas>
                          </div>
@@ -228,6 +241,7 @@
                     <?php
                         echo '<h2>Korisnici</h2>
                         <hr>
+                        <div class="tableWrapper">
                         <table>
                             <thead>
                                 <th>Ime</th>
@@ -246,7 +260,8 @@
                             }
                             echo '
                             </tbody>
-                        </table>';
+                        </table>
+                        </div>';
                     ?>
                 </div>
                 <?php
@@ -297,4 +312,5 @@
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js"></script>
     <script src="javascript/ivuk.js"></script>
+    <script src="vanjske_biblioteke/jsPDF-1.3.2/dist/jspdf.min.js"></script>
 </html>

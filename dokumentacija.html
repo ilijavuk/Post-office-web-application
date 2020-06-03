@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="hr">
+    <head>
+        <title>Dokumentacija</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="author" content="Ilija Vuk">
+        <meta name="keywords" content="Project home page">
+        <meta name="description" content="Home page for the WebDiP Project">
+        <meta name='date' content='May. 19, 2020'>
+        <meta name="referrer" content="origin-when-cross-origin"><link rel="icon" href="multimedija/favicon.png">
+        <meta property="og:image" content="multimedija/favicon.png" />
+        <meta property="og:image:secure_url" content="multimedija/favicon.png" /> 
+        <meta property="og:type" content="Website for a project" /> 
+        <meta property="og:title" content="WebDiP Project - Ilija Vuk" />
+
+        <link rel="stylesheet" href="css/ivuk.css">
+    </head>
+    <body>
+        <header class="header">
+            <figure class="headerFigure"><a href="index.php"><img src="multimedija/post-icon.png" class="headerImage"></a></figure>
+        <span class="headerText">POŠTE</span>
+        </header>
+        
+        <nav class="navBar">
+            <a href="posiljke.php" class="navLink">Pošiljke</a>
+            <a href="racuni.php" class="navLink">Računi</a>
+            <a href="uredi.php" class="navLink">Uredi</a>
+            <a href="drzave.php" class="navLink">Države</a>
+            <a href="dokumentacija.html" class="navLink">Dokumentacija</a>
+            <a href="o_autoru.html" class="navLink">O autoru</a>
+        </nav>
+
+        <div class="footerWrapper">
+		<main>
+            <div id="wrapper" class="rotateIn">
+                <h1 class="heading">Dokumentacija</h1>
+                <h2 class="dokumentacijaHeading">Opis projektnog zadatka</h2>
+                <hr>
+                <p class="dokumentacijaTekst">Projektni zadatak je realizirati sustav za razmjenu pošiljki između korisnika i između poštanskih ureda. U sustavu postoje četiri uloge te svaka od njih ima svoje ovlasti. Uloge koje postoje su: neregistrirani korisnik (gost), registrirani korisnik, moderator (poštar) i administrator (upravitelj).</p>
+                <h2 class="dokumentacijaHeading">Opis projektnog rješenja</h2>
+                <hr>
+                <p class="dokumentacijaTekst">Projektno rješenje je realizirano pomoću HTML-a, CSS-a, javascripta, AJAX-a te PHP-a. Izrada projekta se bazirala na mobile-first pristupu te se proces izrade može podijeliti na par faza. Prva faza je bila detaljno proučavanje zahtjeva da bi okvirno vizualizirali kako bi stranica mogla izgledati.<p>
+                <p class="dokumentacijaTekst">Faza koja slijedi je izrada početnog dizajna. U ovom koraku smo birali osnovnu paletu boja. Kao osnovne boje su odabrane žuta i crna. Žuta boja se najčešće asocira uz poštanske urede te je iz tog razloga i odabrana. Crna boja označava prestiž ili ozbiljnost. Kombinacija ovih boja je vizualno privlačna te paše uz "temu" koju ova stranica prati.</p>
+                <p class="dokumentacijaTekst">Osnovni dizajn stranice je izrađen u programskom alatu Adobe XD te je nakon vizualizacije dizajna u idućoj fazi implementiran pomoću HTML-a i CSS-a.</p>
+                <p class="dokumentacijaTekst">Posljednja faza projekta je implementiranje svih zahtjeva. Ovo je najopsežnija i najzahtjevnija faza.</p>
+                
+                <h2 class="dokumentacijaHeading">Bitne odrednice </h2>
+                <hr>
+                <p class="dokumentacijaTekst">Za ovaj projekt je definirano jako puno odrednica. <br>Neke od najbitnijih su:</p>
+                <ul class="dokumentacijaTekst">
+                    <li>Autentifikacija i autorizacija</li>
+                    <li>Definirane 4 uloge</li>
+                    <li>Slanje i primanje pošiljki </li>
+                    <li>Izdavanje i plaćanje računa</li>
+                    <li>Blokiranje/aktiviranje korisnika</li>
+                    <li>Dodjela moderatora</li>
+                </ul>
+                <p class="dokumentacijaTekst"><b>Autentifikacija</b> je odrađena pomoću sigurne https veze. U bazu podataka se sprema lozinka zaštićena SHA1 enkripcijom. Prilikom prijave korisnik unosi lozinku i korisničko ime ili email. Unesena lozinka se kriptira te se uneseni  podatci uspoređuju s podatcima koji se nalaze u bazi podataka.</p>
+                <p class="dokumentacijaTekst">U slučaju da su podatci ispravni, inicijalizira se nova sesija te se korisnika preusmjerava na početnu stranicu. U slučaju pogrešnog unosa lozinke a ispravno unesenog korisničkog imena/emaila korisniku se bilježi neuspjeli pokušaj prijave. Nakon N neuspjelih pokušaja se korisniku zaključava račun te se ne može prijaviti. N je broj koji određuje administrator.</p>
+                <p class="dokumentacijaTekst" style="margin-top: 10px;"><b>Autorizacija</b> se provodi svaki put kada se učita stranica. Provjerava se uloga korisnika te mu se, ovisno o ulozi, prikazuje sadržaj za koji on ima prava. Tako na primjer administrator vidi i gumbe za mijenjanje prikaza za obične korisnike i prikaza za administratore dok te gumbe obični korisnik ne vidi. Na isti način su ostvarena prava za sve uloge</p>
+                <p class="dokumentacijaTekst" style="margin-top: 10px;"><b>Slanje i primanje pošiljki</b> za slanje nove pošiljke postoji forma gdje se odabire korisnik te se upisuje masa paketa. Nakon toga se čeka da administrator prihvati pošiljku i dodijeli joj početni/konačni ured. Kada pošiljka dođe do nas tada možemo zatražiti račun, platiti ga i zaprimiti pošiljku.</p>
+                <p class="dokumentacijaTekst" style="margin-top: 10px;"><b>Blokiranje i aktiviranje korisnika</b> može napraviti administrator, moderator ili čak i sam sustav. Administrator ima mogućnost blokirati ili odblokirati bilo kojeg korisnika. Moderator može blokirati korisnika koji svoj račun nije platio preko 7 dana. Sustav blokira korisnika, kao što je već gore spomenuto, kada N puta pogrešno upiše lozinku.</p>
+                <figure style="display: block; margin-top: 15px; text-align: center;"><a href = "multimedija/ERA_Dijagram.png" target="_blank"><img src="multimedija/ERA_Dijagram.png" alt="ERA dijagram" style="width: 200px; height: 200px; object-fit: cover;"></a></figure>
+                <p class="dokumentacijaTekst">ERA dijagram sustava se može vidjeti klikom na sliku.</p>
+            
+                <h2 class="dokumentacijaHeading">Popis i opis skripata </h2>
+                <hr>
+                <p class="dokumentacijaTekst">Skripte definirane u ovom projektu su:</p>
+                <ul class="dokumentacijaTekst">
+                    <li>index.php - Početna stranica</li>
+                    <li>drzave.php - Popis svih država s omogućenim pretraživanjem tablice</li>
+                    <li>uredi.php - Popis svih ureda s popisom broja poslanih i primljenih pošiljku. Omogućeno filtriranje po državi. Klikom na ured se otvara galerija</li>
+                    <li>posiljke.php - Stranica pomoću koje se šalju pošiljke te je moguće pregledati pošiljke koje korisnik prima/šalje. Za moderatore tu još postoji mogućnost pregleda statistike, administrator još vidi i zahtjeve za pošiljkama</li>
+                    <li>racuni.php - Popis korisnikovih računa, moderatori također vide i izdane račune te zahtjeve za računima.</li>
+                    <li>postavke.php - Prilagođavanje stranice i pregled korisnika. Korisnik može uključiti noćni način rada. Administrator može mijenjati straničenje/trajanje kolačića, sesije, postavljenu temu...</li>
+                    <li>register.php - Skripta koja sadrži formu za registraciju. Za formu postoji validacija na strani klijenta.</li>
+                    <li>login.php - Skripta koja korisniku omogućava prijavu. Postoji mogućnost prijave pomoću emaila ili korisničkog imena. Link "Zaboravili ste lozinku?" koji vodi na obnovu lozinke</li>
+                    <li>passwordRecovery.php - Skripta pomoću koje korisnik resetira lozinku. Korisnik unosi email te mu na taj email stiže kod za obnovu. Nakon što unese kod unosi novu lozinku.</li>
+                    <li>api.php - Skripta kojoj korisnik nema direktni pristup već se informacijama koje skripta nudi pristupa pomoću Javascripta. Ova skripta sadrži logiku za obradu svih AJAX zahtjeva koje Javascript skripta šalje.</li>
+                    <li>ivuk.js - Javascript datoteka pomoću koje se odvija sva dinamičnost web-stranice. U ovoj skripti se šalju svi ajax zahtjevi te se odvijaju stvari kao filtriranje/straničenje, noćni način rada, otvaranje navigacijske trake na mobilnim uređajima itd.</li>
+                </ul>
+                <p class="dokumentacijaTekst">Autentifikacija se odvija u svakoj skripti pomoću sesijskih varijabli.</p>
+            
+                <h2 class="dokumentacijaHeading">Popis i opis korištenih tehnologija i alata </h2>
+                <hr>
+                <p class="dokumentacijaTekst">U ovom projektu su korišteni mnogi alati i tehnologije.<br>Popis alata i tehnologija:</p>
+                <ul class="dokumentacijaTekst">
+                    <li>Visual Studio Code</li>
+                    <li>Wampserver</li>
+                    <li>phpmyadmin</li>
+                    <li>MySQL Workbench</li>
+                    <li>Adobe XD</li>
+                    <li>HTML, CSS, PHP, Javascript, JQuery, AJAX, SQL</li>
+                </ul>                            
+                <p class="dokumentacijaTekst"><b>Visual studio code</b> je korišten za razvoj aplikacije. Ovaj program je odabran jer je vizualno privlačan te nudi potporu za veliki broj ekstenzija kao što su html, css, js, php, txt.</p>
+                <p class="dokumentacijaTekst"><b>Wampserver</b> je skup programa koji se koriste za hostanje web poslužitelja. Program se sastoji od apache web poslužitelja, MySQL baze podataka te PHP programskog jezika. Odabrao sam Wampserver umjesto nekih drugih opcija web hostinga radi jednostavnosti korištenja te jer sam najviše upoznat sa Wampserverom. <b>Phpmyadmin</b> je dio Wampserver skupa programa. To je besplatan alat koji služi za upravljanje MySQL bazom podataka.</p>
+                <p class="dokumentacijaTekst"> Još jedan od alata koji sam koristio je <b>MySQL Workbench.</b> MySQL Workbench je koristan za izradu ERA dijagrama te za generiranje SQL skripte iz tog ERA dijagrama. Suprotno se također može napraviti, to jest moguće je "reverse engineer" SQL skriptu i iz nje dobiti ERA model. Iz phpmyadmina sam eksportirao bazu podataka i pomoću dobivene SQL skripte generirao ERA model.</p>
+                <p class="dokumentacijaTekst"><b>Adobe XD</b> je alat koji nudi opcije izrade dizajna. Pomoću njega je napravljen osnovni dizajn.</p>
+                <p class="dokumentacijaTekst">Nadalje slijede tehnologije koje su bile korištene pri izradi projektnog rješenja. HTML (eng. <i>HyperText Markup Language</i>) je prezentacijski jezik pomoću kojeg se izrađuje osnovni kostur web-stranice. Da bi dobili web-stranicu čiji je sadržaj dizajniran koristimo CSS (eng. <i>Cascading Style Sheets</i>). CSS je stilski jezik, tj. služi nam za izradu prezentacijskog dijela web-stranice. </p>
+                <p class="dokumentacijaTekst">Za izradu dinamike web-stranice sam koristio Javascript i JQuery. Javascript je jezik koji zapravo "daje život" web-stranici i omogućava interakciju između web-stranice i korisnika. Bez njega nebi bilo moguće napraviti takozvani "Snackbar", tj interaktivnu poruku koja iskače i daje informacije korisniku. Pomoću Javascripta je realiziran navigacijski "hamburger" meni na mobilnim uređajima kao i crtanje canvasa. Osim toga omogućava nam i slanje AJAX zahtjeva.</p>
+                <p class="dokumentacijaTekst">Tehnologija koja nam omogućava slanje xmlhttprequest zahtjeva serveru je AJAX. Pomoću Javascripta i JQuerya šaljemo AJAX zahtjev skripti koja taj zahtjev obrađuje te vraća tražene informacije.</p>
+                <p class="dokumentacijaTekst">SQL je programski jezik koji se koristi za izradu baza podataka. Korišten je prilikom izrade baze podataka kao i prilikom bilo kakve interakcije sa bazom podataka. Neke od naredbi koje SQL nudi su SELECT, INSERT INTO, UPDATE i tako dalje.</p>
+            
+                <h2 class="dokumentacijaHeading">Popis i opis vanjskih modula/biblioteka </h2>
+                <hr>
+                <p class="dokumentacijaTekst">Od vanjskih biblioteka je u ovom projektu korišten JQuery koji znatno olakšava razvoj interaktivne strane web-stranice. Također je korištena DataTables biblioteka koja služi za pretvaranje običnih tablica u tablice koje nude straničenje, filtriranje i sortiranje. Također je korištena biblioteka jsPDF koja služi za spremanje PDF datoteka</p>
+                <p class="dokumentacijaTekst">Osim navedenih nisu korištene druge vanjske biblioteke.</p>
+            </div>
+        </main>  
+
+        <footer class="footer">
+            <span class="footerText">2020, Vuk Ilija</span>
+            <a href="./postavke.php" style="position: absolute; right: 15px; font-size: 18px; text-decoration: underline; color: #f1cd7b;">Postavke</a>
+        </footer>
+        
+        </div>
+    </body>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="javascript/ivuk.js"></script>
+</html>

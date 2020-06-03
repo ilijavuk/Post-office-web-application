@@ -17,10 +17,19 @@
         <link rel="stylesheet" href="css/ivuk.css">
     </head>
     <body>
-       <?php
-            require('komponente/header.php');
-            require('komponente/navBar.php');
-       ?>
+        <header class="header">
+            <figure class="headerFigure"><a href="index.php"><img src="multimedija/post-icon.png" class="headerImage"></a></figure>
+        <span class="headerText">POŠTE</span>
+        </header>
+        
+        <nav class="navBar">
+            <a href="posiljke.php" class="navLink">Pošiljke</a>
+            <a href="racuni.php" class="navLink">Računi</a>
+            <a href="uredi.php" class="navLink">Uredi</a>
+            <a href="drzave.php" class="navLink">Države</a>
+            <a href="dokumentacija.html" class="navLink">Dokumentacija</a>
+            <a href="o_autoru.html" class="navLink">O autoru</a>
+        </nav>
 
         <div class="footerWrapper">
 		<main>
@@ -33,7 +42,7 @@
                         <li>Matični broj</li>
                         <li><b>46198/17-R</b></li>
                         <li>Mail</li>
-                        <li><b><a style="text-decoration: none;" href="mailto:ivuk@foi.hr?subject=Kontakt sa stranice o autoru" target="_blank">ivuk@foi.hr</a></b></li>
+                        <li><b><a style="color: green; text-decoration: underline; cursor: pointer;" href="mailto:ivuk@foi.hr?subject=Kontakt sa stranice o autoru" target="_blank">ivuk@foi.hr</a></b></li>
                         <li>Slika autora</li>
                         <li><img src="multimedija/autor-slika.jpg" alt="Autor" height=100 width=100 /></li>
                     </ul>
@@ -41,17 +50,19 @@
                         <p>Ja sam Ilija Vuk.</p>
                         <p>Full stack developer iz Hrvatske.</p>
                         <p>S html-om, css-om i javascriptom sam se upoznao već u srednjoj školi. Od tad sam zavolio razvoj web stranica te mi je to najdraže područje u svijetu programiranja.</p>
-                        <p>U srednjoj sam upoznat i sa MySQL-om i PHP-om. Taj dio mi je također zanimljiv te sam dosta vremena proveo u izradi baza podataka za različite projekte u srednjoj, na fakultetu, ali i u svoje slobodno vrijeme.</p>
-                        <p>Neke od tih projekata možete vidjeti na mojem GitHub računu klikom na <a href="https://github.com/ivuk98" style="color: green; text-decoration: underline; cursor: pointer;">ovaj link</a>.</p>
+                        <p>U srednjoj sam upoznat i s MySQL-om i PHP-om. Taj dio mi je također zanimljiv te sam dosta vremena proveo u izradi baza podataka za različite projekte u srednjoj, na fakultetu, ali i u svoje slobodno vrijeme.</p>
+                        <p>Neke od tih projekata možete vidjeti na mojem GitHub računu klikom na <a href="https://github.com/ivuk98" style="color: green; text-decoration: underline; cursor: pointer;" target="_blank">ovaj link</a>.</p>
                         <p>Ostali programski jezici kojima sam se bavio su Python 2.7 i 3.x, C, C++, C# te Java .</p>
                     </div>
                 </div>
             </div>
         </main>  
 
-        <?php
-            require('komponente/podnozje.php');
-        ?> 
+        <footer class="footer">
+            <span class="footerText">2020, Vuk Ilija</span>
+            <a href="./postavke.php" style="position: absolute; right: 15px; font-size: 18px; text-decoration: underline; color: #f1cd7b;">Postavke</a>
+        </footer>
+        
         </div>
     </body>
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>

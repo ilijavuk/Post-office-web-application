@@ -12,9 +12,15 @@ body.DarkTheme{
     background-color: #121212;
     color: rgba(255, 255, 255, 0.6);
 }
+
 body.DarkTheme table, body.DarkTheme tr {
-    background-color: #AFAFAF;
-    color: #000000;
+    background-color: #AFAFAF! important;
+    color: #000000! important;
+}
+
+body.DarkTheme .istaknutaSekcija{
+    color: white;
+    background: rgb(74,74,74);
 }
 
 main{
@@ -209,6 +215,7 @@ main{
     height: 100%;
     width: 60%;
     grid-template-rows: repeat(11, 1fr) auto;
+    grid-template-columns: 1fr;
     justify-content: center;
 
     transform: translateX(-100%);
@@ -217,10 +224,12 @@ main{
 }
 
 .navLink{
-    width: 80%;
+    display: inline-block;
+    min-width: 100px;
     height: 35px;
     line-height: 35px;
     text-decoration: none;
+    margin: 0 auto;
     font-size: 24px;
     color: #363636;
     text-align: center;
@@ -310,6 +319,10 @@ tbody{
 
 .linkWithUnderline.redirect{
     display:none;
+}
+
+.tableWrapper{
+    overflow-x: scroll;
 }
 
 table{
@@ -532,6 +545,56 @@ th:hover,thead{
     color: #FFF;
     background-color: #AFAFAF;
 }
+
+#saveAsPDF{
+    object-fit: contain; 
+    width: 40px; 
+    height: 53px; 
+    display: inline-block; 
+    float: right;
+    position: relative;
+    top: 5px;
+}
+
+/* Dokumentacija */
+.dokumentacijaHeading{
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+.dokumentacijaTekst{
+    font-size: 20px;
+    text-align: justify;
+    margin-bottom: 5px;
+}
+
+.indexGrid{
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    column-gap: 15px;
+    gap: 100px;    
+}
+
+.istaknutaSekcija{
+    box-sizing: border-box;
+    width: 100%;  
+    min-height: 200px;
+    border: solid 1px #707070;
+    background: #AFAFAF;
+    color: #000;
+    font-size: 30px;
+    padding: 15px;
+}
+
+.istaknutaSekcija:nth-of-type(even){
+    text-align:right;
+}
+
+.istaknutaSekcija:hover{
+    cursor: pointer;
+}
+
 
 @keyframes slide-in {
     100% { transform: translateX(0%); }
